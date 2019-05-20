@@ -1,0 +1,107 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671\cocoasubrtf400
+{\fonttbl\f0\froman\fcharset0 Times-Bold;\f1\froman\fcharset0 Times-Roman;\f2\fnil\fcharset0 HelveticaNeue;
+}
+{\colortbl;\red255\green255\blue255;\red95\green96\blue99;\red0\green0\blue0;\red44\green39\blue44;
+}
+{\*\expandedcolortbl;;\cssrgb\c44706\c45098\c46275;\cssrgb\c0\c0\c0;\cssrgb\c22745\c20392\c22745;
+}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508378#"}}{\fldrslt 
+\f0\b\fs18 \cf2 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 0:16\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 0 minutes and 16 seconds\
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+
+\f1\fs18 \cf3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec3 Hi. In our earlier videos this week, we looked at ways data can conspire to mislead us. We looked at problems caused by bad measurement systems and biased selection mechanisms. These are data quality issues. They result in the data we're looking at giving a distorted picture of the reality we're trying to understand. We want to look at this, but the data is showing us this. Then we looked at the problems of confounding that restrict our ability to draw cause and effect conclusions from observational data. It simply can't be done reliably. What's common about all these problems is that none of them go away as we get more data. They're big data problems, as well as small data problems.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508378#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 1:06\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 1 minute and 6 seconds\
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf3 Random error, the subject of this video, is a small data problem, by which I mean it's a problem in data sets that are not huge. The most reliable ways people know for getting representative data use some sort of random selection mechanism to avoid bias. I'll show you the simplest version of the problem. Later, we'll be able to extrapolate. We're going to treat the 1,000 people in our NHANES-1000 data set as a small population and we'll sample from it. We want to see how well we can estimate features of this population by using just a small sample from it. I want to keep the number's fairly small so you can see everything that goes on.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508378#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 1:51\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 1 minute and 51 seconds\
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf3 The animations you'll see come from VIT's Sampling Variation module, activated using the bottom part of the familiar iNZight start-up window. At the top of this screen is a dot plot of the systolic blood pressure's of everyone in our 1,000 person population. Marked up on the graph is the position of the mean of all these blood pressures. It's 118.1. That's the target we want to hit with our estimate. How well can we estimate the mean blood pressure for this whole population using just a sample of 25 people? How close will it get us to our target of 118.1? Each dot in the dot plot represents a person.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508378#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 2:36\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 2 minutes and 36 seconds\
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf3 We're going to randomly select people, one at a time, until we get 25 of them. When a person get selected their dot turns black. Here they are being selected now.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508378#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 2:51\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 2 minutes and 51 seconds\
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf3 Now we're going to make a plot using just those people selected and mark the position of their mean. Well, we got that wrong. The real mean is 118.1, but our sample gave about 121. We'll try again and see if we can do better.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508378#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 3:15\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 3 minutes and 15 seconds\
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf3 Just as bad as last time, but on the other side. Every time we do this we're going to leave a blue mark at the position of the new sample mean. This will build up a history of all the sample means we've seen. Let's do it a third time.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508378#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 3:36\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 3 minutes and 36 seconds\
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf3 Even worse. Of course, in the real world, we sample when we can't see our population and don't know the real answer. So we'll put a veil over the population to make it a little more realistic and do it five more times.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508378#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 4:00\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 4 minutes and 0 seconds\
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf3 Every answer we've got from a sample is wrong. What happens if we do it 1,000 times? We can see that almost all of the answers we've gotten are between about 110 and 130. What does this tell us about the process of taking a sample and using it to estimate a population mean? The first thing is that the answer from our sample is generally going to be wrong. For a wrong answer to be useful to us, we need to have some idea about how wrong it could be.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508378#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 4:41\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 4 minutes and 41 seconds\
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf3 If I take a sample and calculate its mean, we'll get one of these blue marks. In the real world, we wouldn't see any of the other blue marks, or the true value, so we can never know how big our error is. The best statisticians can do is say, "It's unlikely to be bigger than 10, say", or put it another way, "The likely error is less than 10". It may be that the likely error is small enough not to matter to us. If the likely error is very big, we'd probably think, "This estimate is too untrustworthy to be useful". Before going on, I'm also going to capture all the answers we're getting in another way that is more conventional in statistics.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508378#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 5:27\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 5 minutes and 27 seconds\
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf3 I'll do a few slowly until you get the idea.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508378#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 5:37\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 5 minutes and 37 seconds\
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf3 Now we'll do it 1,000 times. In the middle representation each blue bar is the answer given by one of our samples. The second representation is a dot plot. Each dot, or circle in the heap, is likewise the answer given by one of our samples. Next, I'll try sampling using samples of 200-people. And I'll show it to you alongside the smallest samples of 25-people to make a point.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508378#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 6:09\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 6 minutes and 9 seconds\
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf3 The good news is that the set of answers we've got with the bigger samples are generally much closer to the truth. We're making small errors.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508378#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 6:18\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 6 minutes and 18 seconds\
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf3 This illustrates a general principle: with random sampling errors the bigger the sample we take, the smaller the errors we make. So where possible, we can reduce error by increasing the size of our sample. Unfortunately, collecting more data generally costs more money. Sampling errors are the errors we make when we use sample results to estimate population quantities. We've just seen what this looks like when we try to estimate the mean blood pressure in the whole population using the mean blood pressure from a sample. For any particular sample we take we can never know how big our sampling error is. The best we can do is estimate how big it's likely to be. We'll see ways of doing that next week.\
+\pard\pardeftab720\sl480\partightenfactor0
+
+\f2\fs40 \cf4 \strokec4 \
+}

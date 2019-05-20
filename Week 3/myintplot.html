@@ -1,0 +1,2775 @@
+<!DOCTYPE HTML>
+<!-- template for HTML conversion plot -->
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> iNZight Plot </title>
+      <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css">
+<style> /* layout settings */
+#main {
+  position: fixed;
+  display: flex;
+  width: 100%;
+  top: 60px;
+  height: calc(100% - 60px);
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 10px;
+  background-color: #e3e3e3;
+  overflow: hidden;
+}
+
+.svg-div, .tbl-div {
+  transition: all ease-in-out 0.5s;
+  padding: 20px;
+  border-radius: 5px;
+  height: 100%;
+  background-color: white;
+  box-shadow: 0 0 3px #B0BEC5;
+  min-width: 50%;
+}
+
+.tbl-div {
+   overflow-x: auto;
+}
+
+/*moveEverything left/right */
+.moveRight {
+  transform: translateX(200%);
+}
+
+.moveLeft {
+  transform: translateX(-200%);
+}
+
+.expand {
+  min-width: 100%;
+  transform: translateX(-50%);
+}
+
+.mid {
+  min-width: 100%;
+  /*transform: translateX(50%);*/
+}
+
+svg {
+  display: inline-block;
+  margin: auto;
+  width: 100%;
+  height: 100%;
+}
+
+/* attempt to use media queries */
+@media (max-width: 600px), (orientation: portrait) {
+
+  #main {
+    position: fixed;
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .svg-div, .tbl-div {
+    transition: all ease-in-out 0.5s;
+    width: 100%;
+    min-height: 50%;
+  }
+
+  svg {
+    height: 100%;
+  }
+
+  .tbl-div {
+    overflow-y: auto;
+  }
+
+  /* move everything up/down */
+  .moveRight {
+    transform: translateY(200%);
+  }
+
+  .moveLeft {
+    transform: translateY(-200%);
+  }
+
+  .mid {
+    min-height: 100%;
+    /*transform: translateY(50%);*/
+  }
+
+  .expand {
+    min-height: 100%;
+    transform: translateY(-50%);
+  }
+
+  label {
+    display: none;
+  }
+
+}
+
+/* navigation bar */
+#control {
+  width: 100%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  height: 60px;
+  background-color: #12508a;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu {
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.menu li {
+  color: rgba(255, 255, 255, 0.8);
+  text-align: right;
+  font-size: 15px;
+  margin: 5px;
+  transition: all ease 0.3s;
+  padding: 7px;
+  border-radius: 3px;
+}
+
+.menu li:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+.glyphicon {
+  font-size: 15px;
+}
+
+#selectVar {
+  height: 45px;
+}
+
+.form-div {
+  margin: 15px 0px;
+}
+
+label {
+  color: rgba(255, 255, 255, 0.8);
+  margin-right: 5px;
+  font-weight: normal;
+}
+
+/* style help overlay */
+.help-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: -1;
+  transition: all ease 0.5s;
+  overflow-y: auto;
+}
+
+.help-info {
+  padding: 10px;
+  margin: auto;
+  color: black;
+  background-color: white;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.title {
+  font-size: 25px;
+}
+
+.move {
+  opacity: 1;
+  z-index: 5;
+}
+
+.logo {
+  width: 20%;
+}
+
+/*** TABLE PROPERTIES ***/
+/*totals column  or totals row */
+table {
+  width: 100% !important;
+}
+
+td, th {
+  text-align: center;
+  word-wrap: break-word;
+  font-size: 12px;
+}
+
+/* table headings */
+.headings {
+  font-style: italic;
+  font-weight:normal;
+  text-decoration: underline;
+  text-align: center;
+  align: center;
+}
+
+/* groups for two way bar plots */
+.yGroup, .tc {
+  text-align: center;
+  font-weight: bold;
+}
+
+.Percentage {
+  background-color:rgb(0, 0, 255);
+  color: white;
+  opacity: 0.75;
+  margin-left: 10px;
+}
+
+.Count {
+ background-color: purple;
+ opacity: 0.75;
+ color: white;
+ margin-left: 10px;
+}
+
+.trend-info, .brush-info {
+  color: white;
+}
+
+/* textlabels */
+.label {
+  font-size: 10;
+  fill: black;
+  stroke: none;
+  fill-opacity: 1;
+  text-anchor: middle;
+  visibility: inherit;
+  font-weight: normal;
+}
+
+/* BAR PROPERTIES (for bar charts) */
+.bar {
+  stroke: none;
+  visibility: visible;
+  opacity: 1;
+}
+
+.bar:hover {
+  stroke-width: 50%;
+  fill-opacity: 0.5;
+}
+
+/* upon selection */
+.selected {
+  opacity: 1;
+  visibility: visible;
+}
+
+.none {
+  opacity: 0.2;
+}
+
+.hidden {
+  display: none;
+  visibility: hidden;
+}
+
+/*highlighting data */
+.totalRow, .tabSelect, .select {
+  align: center;
+  font-weight: bold;
+}
+
+.rowSelect {
+  display: table-row;
+  opacity: 1;
+}
+
+/* legend interactions and styling */
+.show {
+  font-size: 115%;
+  fill-opacity: 0.5;
+}
+
+.out {
+  font-size: 100%;
+  fill-opacity: 1;
+}
+
+.keyText {
+  fill: black;
+}
+
+/* for box plots - dot plots, histograms */
+.box {
+  fill: gray;
+  fill-opacity: 0.5;
+}
+
+.fillBox {
+  fill-opacity: 0.2;
+}
+
+/* for dot plots and scatter plots */
+.point:hover { /* showPoint */
+  fill: currentColor;
+  stroke-width: 50%;
+  fill-opacity: 1;
+}
+
+/* for histograms and hexbins */
+.histBar {
+  stroke: white;
+  stroke-width: 0.25;
+}
+
+.hexbin {
+  stroke: none;
+}
+
+.hexbin:hover, .histBar:hover {
+  fill-opacity: 0.5;
+}
+
+div.tooltip {
+    position: absolute;
+    text-align: center;
+    padding: 5px;
+    z-index: 5;
+    opacity: 1;
+    visibility: hidden;
+    font: 11px sans-serif;
+    background: white;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    pointer-events: none;
+}
+
+span {
+  font-weight: bold;
+}
+
+/* for iNZightMaps */
+.selectRegion {
+  stroke: darkgray;
+  fill: black;
+  fill-opacity: 0.5;
+}
+
+/* line chart container */
+.spark-div {
+  width: 100%;
+  padding: 10px;
+  clear: left;
+}
+
+/* ggplot2 theme for sparkline chart */
+.grid-background {
+  fill: #ddd;
+}
+
+.spark-xaxis path, .spark-yaxis path {
+  display: none;
+}
+
+.grid-lines {
+  stroke: #fff;
+  stroke-width: 0.75px;
+}
+
+.grid path {
+  display: none;
+}
+
+.minor {
+  stroke-opacity: 0.5;
+  stroke-width: 0.5px;
+}
+
+.grid text {
+  display: none;
+}
+
+/* lines on the chart */
+.spark-line {
+  fill: none;
+  stroke: black;
+  opacity: 0.2;
+  stroke-width: 1.5;
+}
+
+.follow-text {
+    stroke: white;
+    fill: black;
+    stroke-width: 0.05;
+    font-size: 12px;
+    text-anchor: middle;
+}
+
+.region-lab {
+  font-size: 13px;
+}
+
+.x-lab, .spark-title, .main-title {
+  text-anchor: middle;
+}
+
+.x-lab, .y-lab {
+  font-size: 16px;
+}
+
+.main-title, .spark-title {
+  fill: black;
+  fill-opacity: 1;
+  font-size: 18px;
+}
+
+.x-line {
+  stroke: black;
+  stroke-width: 0.5;
+}
+
+/* time slider */
+.slider-div {
+  width: 100%;
+}
+
+.slider {
+  -webkit-appearance: none;
+  height: 5px;
+  border-radius: 5px;
+  background: lightgray;
+  width: calc(100% - 15px);
+  display: inline-block;
+}
+
+/* circle thumb */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: black;
+  cursor: pointer;
+  transition: background 0.15s ease-in-out;
+}
+
+.slider-val {
+  width: 55px;
+  border-radius: 5px;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  line-height: 12px;
+  margin: auto;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  background: darkgray;
+}
+
+/* play-pause button */
+.play-pause {
+    text-align: center;
+    margin: auto;
+    width: 100%;
+} </style>
+    <script type = "text/javascript" src = "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type = "text/javascript" src = "https://d3js.org/d3.v4.min.js"></script>
+    <script type = "text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type = "text/javascript" src ="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"> </script>
+    <script type = "text/javascript" charset="utf8" src = "https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
+  </head>
+  <body>
+    <!-- control panel -->
+    <div class = "control" id = "control">
+      <ul class = "menu">
+        <li class = "plot"> <span class="glyphicon glyphicon-stats"></span> Plot </li>
+        <li class = "view-tbl"><span class="glyphicon glyphicon-list-alt"></span> Table </li>
+        <li class = "reset" id = "reset"> <span class="glyphicon glyphicon-refresh"></span> Reset </li>
+        <li class = "help"><span class = "glyphicon glyphicon-question-sign"> </span> </li>
+      </ul>
+    </div>
+    <div id = "main">
+      <div class = "svg-div">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="502.5px" height="324px" viewBox="0 0 502.5 324" version="1.1">
+  <metadata xmlns:gridsvg="http://www.stat.auckland.ac.nz/~paul/R/gridSVG/">
+    <gridsvg:generator name="gridSVG" version="1.6-0" time="2019-05-03 11:25:36"/>
+    <gridsvg:argument name="name" value=""/>
+    <gridsvg:argument name="exportCoords" value="none"/>
+    <gridsvg:argument name="exportMappings" value="none"/>
+    <gridsvg:argument name="exportJS" value="none"/>
+    <gridsvg:argument name="res" value="72"/>
+    <gridsvg:argument name="prefix" value=""/>
+    <gridsvg:argument name="addClasses" value="FALSE"/>
+    <gridsvg:argument name="indent" value="TRUE"/>
+    <gridsvg:argument name="htmlWrapper" value="FALSE"/>
+    <gridsvg:argument name="usePaths" value="vpPaths"/>
+    <gridsvg:argument name="uniqueNames" value="TRUE"/>
+    <gridsvg:separator name="id.sep" value="."/>
+    <gridsvg:separator name="gPath.sep" value="::"/>
+    <gridsvg:separator name="vpPath.sep" value="::"/>
+  </metadata>
+  <g transform="translate(0, 324) scale(1, -1)">
+    <g id="gridSVG" fill="rgb(255,255,255)" stroke="rgb(0,0,0)" stroke-dasharray="none" stroke-width="0.75" font-size="12" font-family="Helvetica, Arial, FreeSans, Liberation Sans, Nimbus Sans L, sans-serif" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-opacity="1" fill-opacity="1" font-weight="normal" font-style="normal">
+      <defs>
+        <symbol id="gridSVG.pch21" viewBox="-5 -5 10 10" overflow="visible">
+          <circle cx="0" cy="0" r="3.75"/>
+        </symbol>
+      </defs>
+      <g id="container.1" font-size="12">
+        <g id="container::VP:TOPlayout.1">
+          <g id="container::VP:TOPlayout::GRID.VP.295.1"/>
+          <g id="container::VP:TOPlayout::GRID.VP.296.1">
+            <g id="inz-main-title.1">
+              <g id="inz-main-title.1.1" transform="translate(335, 421.69)" stroke-width="0.1">
+                <g id="inz-main-title.1.1.scale" transform="scale(1, -1)">
+                  <text x="0" y="0" id="inz-main-title.1.1.text" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1" font-size="14.4">
+                    <tspan id="inz-main-title.1.1.tspan.1" dy="5.15" x="0">EnergyUsePerPerson versus CO2Emissions</tspan>
+                  </text>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+      <g id="container.2" font-size="12">
+        <g id="container::VP:TOPlayout.2">
+          <g id="container::VP:TOPlayout::GRID.VP.297.1">
+            <g id="inz-ylab.1">
+              <g id="inz-ylab.1.1" transform="translate(8.64, 225.45)" stroke-width="0.1">
+                <g id="inz-ylab.1.1.scale" transform="scale(1, -1)">
+                  <text x="0" y="0" id="inz-ylab.1.1.text" transform="rotate(-90)" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1" font-size="12">
+                    <tspan id="inz-ylab.1.1.tspan.1" dy="4.29" x="0">EnergyUsePerPerson</tspan>
+                  </text>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+      <g id="container.3" font-size="12">
+        <g id="container::VP:TOPlayout.3">
+          <g id="container::VP:TOPlayout::GRID.VP.298.1">
+            <g id="inz-xlab.1">
+              <g id="inz-xlab.1.1" transform="translate(312.14, 22.38)" stroke-width="0.1">
+                <g id="inz-xlab.1.1.scale" transform="scale(1, -1)">
+                  <text x="0" y="0" id="inz-xlab.1.1.text" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1" font-size="12">
+                    <tspan id="inz-xlab.1.1.tspan.1" dy="4.29" x="0">CO2Emissions</tspan>
+                  </text>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+      <g id="container.4" font-size="12">
+        <g id="container::VP:TOPlayout.4">
+          <g id="container::VP:TOPlayout::GRID.VP.299.1">
+            <g id="container::VP:TOPlayout::GRID.VP.299::VP:LEGlayout.1"/>
+          </g>
+        </g>
+      </g>
+      <g id="container.5" font-size="12">
+        <g id="container::VP:TOPlayout.5">
+          <g id="container::VP:TOPlayout::GRID.VP.299.2">
+            <g id="container::VP:TOPlayout::GRID.VP.299::VP:LEGlayout.2">
+              <g id="container::VP:TOPlayout::GRID.VP.299::VP:LEGlayout::GRID.VP.300.1">
+                <g id="container::VP:TOPlayout::GRID.VP.299::VP:LEGlayout::GRID.VP.300::GRID.VP.292.1">
+                  <g id="inz-leg-lines.1">
+                    <g id="container::VP:TOPlayout::GRID.VP.299::VP:LEGlayout::GRID.VP.300::GRID.VP.292::GRID.VP.293.1">
+                      <g id="GRID.cellGrob.235.1">
+                        <g id="inz-leg-pt-linear.1">
+                          <polyline id="inz-leg-pt-linear.1.1" points="610.28,211.05 627.56,211.05" stroke="rgb(0,0,255)" stroke-dasharray="none" stroke-width="1.5" stroke-opacity="1" fill="none"/>
+                        </g>
+                      </g>
+                    </g>
+                    <g id="container::VP:TOPlayout::GRID.VP.299::VP:LEGlayout::GRID.VP.300::GRID.VP.292::GRID.VP.294.1">
+                      <g id="GRID.cellGrob.236.1">
+                        <g id="inz-leg-txt-linear.1">
+                          <g id="inz-leg-txt-linear.1.1" transform="translate(633.32, 211.05)" stroke-width="0.1">
+                            <g id="inz-leg-txt-linear.1.1.scale" transform="scale(1, -1)">
+                              <text x="0" y="0" id="inz-leg-txt-linear.1.1.text" text-anchor="start" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6">
+                                <tspan id="inz-leg-txt-linear.1.1.tspan.1" dy="3.44" x="0">linear</tspan>
+                              </text>
+                            </g>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+      <g id="container.6" font-size="12">
+        <g id="container::VP:TOPlayout.6">
+          <g id="container::VP:TOPlayout::GRID.VP.301.1">
+            <g id="inz-main-sub-bottom.1">
+              <g id="inz-main-sub-bottom.1.1" transform="translate(312.14, 6.87)" stroke-width="0.1">
+                <g id="inz-main-sub-bottom.1.1.scale" transform="scale(1, -1)">
+                  <text x="0" y="0" id="inz-main-sub-bottom.1.1.text" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6">
+                    <tspan id="inz-main-sub-bottom.1.1.tspan.1" dy="3.44" x="0">101 missing values (32 in CO2Emissions, 101 in EnergyUsePerPerson)</tspan>
+                  </text>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+      <g id="container.7" font-size="12">
+        <g id="container::VP:TOPlayout.7">
+          <g id="container::VP:TOPlayout::GRID.VP.302.1">
+            <g id="container::VP:TOPlayout::GRID.VP.302::VP:PLOTlayout.1"/>
+          </g>
+        </g>
+      </g>
+      <g id="container.8" font-size="12">
+        <g id="container::VP:TOPlayout.8">
+          <g id="container::VP:TOPlayout::GRID.VP.302.2">
+            <g id="container::VP:TOPlayout::GRID.VP.302::VP:PLOTlayout.2">
+              <g id="container::VP:TOPlayout::GRID.VP.302::VP:PLOTlayout::GRID.VP.303.1" font-size="14.4">
+                <g id="container::VP:TOPlayout::GRID.VP.302::VP:PLOTlayout::GRID.VP.303::GRID.VP.304.1">
+                  <defs>
+                    <clipPath id="container::VP:TOPlayout::GRID.VP.302::VP:PLOTlayout::GRID.VP.303::GRID.VP.304::VP:locate.these.points.1.clipPath">
+                      <rect x="48.81" y="62.55" width="526.67" height="325.79" fill="none" stroke="none"/>
+                    </clipPath>
+                  </defs>
+                  <g id="container::VP:TOPlayout::GRID.VP.302::VP:PLOTlayout::GRID.VP.303::GRID.VP.304::VP:locate.these.points.1" clip-path="url(#container::VP:TOPlayout::GRID.VP.302::VP:PLOTlayout::GRID.VP.303::GRID.VP.304::VP:locate.these.points.1.clipPath)">
+                    <g id="inz-plot-bg.1.1.1">
+                      <rect id="inz-plot-bg.1.1.1.1" x="48.81" y="62.55" width="526.67" height="325.79" transform="" fill="rgb(238,238,238)" stroke-dasharray="none" fill-opacity="1"/>
+                    </g>
+                    <g id="inz-x-grid.1.1.1">
+                      <polyline id="inz-x-grid.1.1.1.1" points="71.92,62.55 71.92,388.34" stroke="rgb(255,255,255)" stroke-width="0.75" stroke-opacity="1" fill="none"/>
+                      <polyline id="inz-x-grid.1.1.1.2" points="170.62,62.55 170.62,388.34" stroke="rgb(255,255,255)" stroke-width="0.75" stroke-opacity="1" fill="none"/>
+                      <polyline id="inz-x-grid.1.1.1.3" points="269.32,62.55 269.32,388.34" stroke="rgb(255,255,255)" stroke-width="0.75" stroke-opacity="1" fill="none"/>
+                      <polyline id="inz-x-grid.1.1.1.4" points="368.02,62.55 368.02,388.34" stroke="rgb(255,255,255)" stroke-width="0.75" stroke-opacity="1" fill="none"/>
+                      <polyline id="inz-x-grid.1.1.1.5" points="466.72,62.55 466.72,388.34" stroke="rgb(255,255,255)" stroke-width="0.75" stroke-opacity="1" fill="none"/>
+                      <polyline id="inz-x-grid.1.1.1.6" points="565.41,62.55 565.41,388.34" stroke="rgb(255,255,255)" stroke-width="0.75" stroke-opacity="1" fill="none"/>
+                    </g>
+                    <g id="inz-y-grid.1.1.1">
+                      <polyline id="inz-y-grid.1.1.1.1" points="48.81,74.94 575.48,74.94" stroke="rgb(255,255,255)" stroke-width="0.75" stroke-opacity="1" fill="none"/>
+                      <polyline id="inz-y-grid.1.1.1.2" points="48.81,163.45 575.48,163.45" stroke="rgb(255,255,255)" stroke-width="0.75" stroke-opacity="1" fill="none"/>
+                      <polyline id="inz-y-grid.1.1.1.3" points="48.81,251.95 575.48,251.95" stroke="rgb(255,255,255)" stroke-width="0.75" stroke-opacity="1" fill="none"/>
+                      <polyline id="inz-y-grid.1.1.1.4" points="48.81,340.46 575.48,340.46" stroke="rgb(255,255,255)" stroke-width="0.75" stroke-opacity="1" fill="none"/>
+                      <polyline id="inz-y-grid.1.1.1.5" points="48.81,428.97 575.48,428.97" stroke="rgb(255,255,255)" stroke-width="0.75" stroke-opacity="1" fill="none"/>
+                    </g>
+                    <g id="inz-SCATTERPOINTS.1.1.1">
+                      <use id="inz-SCATTERPOINTS.1.1.1.1" href="#gridSVG.pch21" x="76.5" y="81.48" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.2" href="#gridSVG.pch21" x="150.32" y="117.44" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.3" href="#gridSVG.pch21" x="72.95" y="82.38" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.4" href="#gridSVG.pch21" x="421.05" y="332.16" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.5" href="#gridSVG.pch21" x="98.02" y="91.45" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.6" href="#gridSVG.pch21" x="74.41" y="82.79" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.7" href="#gridSVG.pch21" x="152.65" y="146.17" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.8" href="#gridSVG.pch21" x="117.18" y="109.11" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.9" href="#gridSVG.pch21" x="86.16" y="85.88" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.10" href="#gridSVG.pch21" x="166.11" y="143.6" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.11" href="#gridSVG.pch21" x="86.49" y="86.43" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.12" href="#gridSVG.pch21" x="88.07" y="83.41" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.13" href="#gridSVG.pch21" x="97.06" y="94.42" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.14" href="#gridSVG.pch21" x="82.42" y="87.93" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.15" href="#gridSVG.pch21" x="141.37" y="127.04" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.16" href="#gridSVG.pch21" x="81.31" y="83.57" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.17" href="#gridSVG.pch21" x="114.44" y="103.91" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.18" href="#gridSVG.pch21" x="91.9" y="97.89" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.19" href="#gridSVG.pch21" x="168.83" y="145.38" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.20" href="#gridSVG.pch21" x="380.8" y="268.51" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.21" href="#gridSVG.pch21" x="124.56" y="136.92" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.22" href="#gridSVG.pch21" x="149.63" y="147.15" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.23" href="#gridSVG.pch21" x="111.62" y="99.52" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.24" href="#gridSVG.pch21" x="86.66" y="85.13" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.25" href="#gridSVG.pch21" x="74.55" y="83.1" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.26" href="#gridSVG.pch21" x="145.64" y="127.01" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.27" href="#gridSVG.pch21" x="86.86" y="84.25" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.28" href="#gridSVG.pch21" x="155.83" y="142.72" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.29" href="#gridSVG.pch21" x="169.54" y="171.76" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.30" href="#gridSVG.pch21" x="89.73" y="92.17" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.31" href="#gridSVG.pch21" x="108.08" y="96.56" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.32" href="#gridSVG.pch21" x="74.39" y="79.98" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.33" href="#gridSVG.pch21" x="81.8" y="80.53" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.34" href="#gridSVG.pch21" x="115.27" y="103.03" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.35" href="#gridSVG.pch21" x="86.23" y="84.3" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.36" href="#gridSVG.pch21" x="115.24" y="107.48" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.37" href="#gridSVG.pch21" x="75.54" y="81.75" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.38" href="#gridSVG.pch21" x="79.45" y="82.79" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.39" href="#gridSVG.pch21" x="109.34" y="91.63" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.40" href="#gridSVG.pch21" x="136.78" y="162.1" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.41" href="#gridSVG.pch21" x="72.81" y="81.95" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.42" href="#gridSVG.pch21" x="132.95" y="110.89" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.43" href="#gridSVG.pch21" x="79.65" y="84.51" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.44" href="#gridSVG.pch21" x="74.84" y="80.97" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.45" href="#gridSVG.pch21" x="90.79" y="92.9" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.46" href="#gridSVG.pch21" x="86.16" y="86.58" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.47" href="#gridSVG.pch21" x="229.66" y="179.17" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.48" href="#gridSVG.pch21" x="142.4" y="373.54" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.49" href="#gridSVG.pch21" x="96.5" y="96.99" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.50" href="#gridSVG.pch21" x="91.63" y="91.13" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.51" href="#gridSVG.pch21" x="207.09" y="146.77" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.52" href="#gridSVG.pch21" x="175.85" y="185.57" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.53" href="#gridSVG.pch21" x="153.54" y="120.39" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.54" href="#gridSVG.pch21" x="113.45" y="106.88" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.55" href="#gridSVG.pch21" x="168.37" y="130.36" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.56" href="#gridSVG.pch21" x="153.53" y="102.86" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.57" href="#gridSVG.pch21" x="137.95" y="120.89" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.58" href="#gridSVG.pch21" x="77.66" y="82.77" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.59" href="#gridSVG.pch21" x="112.26" y="97.98" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.60" href="#gridSVG.pch21" x="75.52" y="81.39" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.61" href="#gridSVG.pch21" x="77.23" y="81.89" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.62" href="#gridSVG.pch21" x="252.2" y="177.23" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.63" href="#gridSVG.pch21" x="124.1" y="115.56" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.64" href="#gridSVG.pch21" x="147.06" y="121.93" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.65" href="#gridSVG.pch21" x="143.9" y="128.96" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.66" href="#gridSVG.pch21" x="104.91" y="109.97" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.67" href="#gridSVG.pch21" x="135.96" y="126.83" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.68" href="#gridSVG.pch21" x="83.42" y="86.2" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.69" href="#gridSVG.pch21" x="156.04" y="135.02" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.70" href="#gridSVG.pch21" x="117.9" y="107.68" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.71" href="#gridSVG.pch21" x="116.36" y="124.65" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.72" href="#gridSVG.pch21" x="156.03" y="136.81" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.73" href="#gridSVG.pch21" x="78" y="88" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.74" href="#gridSVG.pch21" x="124.39" y="170.17" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.75" href="#gridSVG.pch21" x="170.33" y="134.76" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.76" href="#gridSVG.pch21" x="166.05" y="146.97" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.77" href="#gridSVG.pch21" x="75.07" y="78.32" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.78" href="#gridSVG.pch21" x="124.21" y="102.82" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.79" href="#gridSVG.pch21" x="315.28" y="241.29" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.80" href="#gridSVG.pch21" x="130.34" y="101.77" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.81" href="#gridSVG.pch21" x="85.93" y="87.07" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.82" href="#gridSVG.pch21" x="149.57" y="98.15" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.83" href="#gridSVG.pch21" x="299.82" y="230.44" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.84" href="#gridSVG.pch21" x="104.04" y="89.73" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.85" href="#gridSVG.pch21" x="140.04" y="134.87" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.86" href="#gridSVG.pch21" x="74.59" y="80.57" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.87" href="#gridSVG.pch21" x="112.94" y="102.85" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.88" href="#gridSVG.pch21" x="75.46" y="79.44" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.89" href="#gridSVG.pch21" x="190.19" y="160.79" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.90" href="#gridSVG.pch21" x="112.41" y="95.88" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.91" href="#gridSVG.pch21" x="103.83" y="94.19" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.92" href="#gridSVG.pch21" x="124.13" y="111.11" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.93" href="#gridSVG.pch21" x="73.46" y="85.87" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.94" href="#gridSVG.pch21" x="84.73" y="86.54" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.95" href="#gridSVG.pch21" x="254.97" y="207.49" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.96" href="#gridSVG.pch21" x="157.41" y="122.86" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.97" href="#gridSVG.pch21" x="229.43" y="181.6" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.98" href="#gridSVG.pch21" x="126.08" y="115.65" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.99" href="#gridSVG.pch21" x="233.3" y="215.59" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.100" href="#gridSVG.pch21" x="98.42" y="91.18" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.101" href="#gridSVG.pch21" x="176.03" y="192.46" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.102" href="#gridSVG.pch21" x="92.75" y="88.83" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.103" href="#gridSVG.pch21" x="136.04" y="119.4" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.104" href="#gridSVG.pch21" x="175.88" y="160.56" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.105" href="#gridSVG.pch21" x="288.04" y="227.35" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.106" href="#gridSVG.pch21" x="76.37" y="79.56" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.107" href="#gridSVG.pch21" x="72.75" y="77.36" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.108" href="#gridSVG.pch21" x="75.57" y="84.52" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.109" href="#gridSVG.pch21" x="151.13" y="124.84" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.110" href="#gridSVG.pch21" x="164.96" y="128.53" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.111" href="#gridSVG.pch21" x="89.25" y="89.02" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.112" href="#gridSVG.pch21" x="72.96" y="80.82" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.113" href="#gridSVG.pch21" x="131.84" y="147.76" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.114" href="#gridSVG.pch21" x="182.34" y="154.48" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.115" href="#gridSVG.pch21" x="344.36" y="241.93" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.116" href="#gridSVG.pch21" x="125.74" y="121.6" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.117" href="#gridSVG.pch21" x="80.92" y="85.49" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.118" href="#gridSVG.pch21" x="79.12" y="88.12" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.119" href="#gridSVG.pch21" x="216.56" y="154.22" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.120" href="#gridSVG.pch21" x="551.54" y="345.96" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.121" href="#gridSVG.pch21" x="96.01" y="91.09" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.122" href="#gridSVG.pch21" x="87.27" y="99.22" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.123" href="#gridSVG.pch21" x="78.82" y="87.29" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                      <use id="inz-SCATTERPOINTS.1.1.1.124" href="#gridSVG.pch21" x="90.75" y="88.01" width="11.52" height="11.52" transform=" translate(-5.76,-5.76)" stroke="rgb(127,127,127)" stroke-width="1.3" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0" font-size="9.6"/>
+                    </g>
+                    <g id="inz-trend-linear.1.1.1">
+                      <polyline id="inz-trend-linear.1.1.1.1" points="48.81,68.03 49.34,68.37 49.86,68.7 50.39,69.04 50.92,69.37 51.44,69.71 51.97,70.04 52.5,70.38 53.02,70.72 53.55,71.05 54.08,71.39 54.6,71.72 55.13,72.06 55.66,72.39 56.18,72.73 56.71,73.06 57.24,73.4 57.76,73.73 58.29,74.07 58.82,74.4 59.34,74.74 59.87,75.07 60.4,75.41 60.92,75.75 61.45,76.08 61.98,76.42 62.5,76.75 63.03,77.09 63.56,77.42 64.08,77.76 64.61,78.09 65.14,78.43 65.66,78.76 66.19,79.1 66.72,79.43 67.24,79.77 67.77,80.1 68.3,80.44 68.82,80.78 69.35,81.11 69.88,81.45 70.4,81.78 70.93,82.12 71.46,82.45 71.98,82.79 72.51,83.12 73.04,83.46 73.56,83.79 74.09,84.13 74.62,84.46 75.14,84.8 75.67,85.13 76.2,85.47 76.72,85.81 77.25,86.14 77.78,86.48 78.3,86.81 78.83,87.15 79.36,87.48 79.88,87.82 80.41,88.15 80.94,88.49 81.46,88.82 81.99,89.16 82.52,89.49 83.04,89.83 83.57,90.16 84.1,90.5 84.62,90.84 85.15,91.17 85.68,91.51 86.2,91.84 86.73,92.18 87.26,92.51 87.78,92.85 88.31,93.18 88.84,93.52 89.36,93.85 89.89,94.19 90.42,94.52 90.94,94.86 91.47,95.19 92,95.53 92.52,95.87 93.05,96.2 93.58,96.54 94.1,96.87 94.63,97.21 95.16,97.54 95.68,97.88 96.21,98.21 96.74,98.55 97.26,98.88 97.79,99.22 98.32,99.55 98.84,99.89 99.37,100.22 99.9,100.56 100.42,100.9 100.95,101.23 101.48,101.57 102,101.9 102.53,102.24 103.06,102.57 103.58,102.91 104.11,103.24 104.64,103.58 105.16,103.91 105.69,104.25 106.22,104.58 106.74,104.92 107.27,105.25 107.8,105.59 108.32,105.93 108.85,106.26 109.38,106.6 109.9,106.93 110.43,107.27 110.96,107.6 111.48,107.94 112.01,108.27 112.54,108.61 113.06,108.94 113.59,109.28 114.12,109.61 114.64,109.95 115.17,110.28 115.7,110.62 116.22,110.96 116.75,111.29 117.28,111.63 117.8,111.96 118.33,112.3 118.86,112.63 119.38,112.97 119.91,113.3 120.44,113.64 120.96,113.97 121.49,114.31 122.02,114.64 122.54,114.98 123.07,115.31 123.6,115.65 124.12,115.99 124.65,116.32 125.18,116.66 125.7,116.99 126.23,117.33 126.76,117.66 127.28,118 127.81,118.33 128.34,118.67 128.86,119 129.39,119.34 129.92,119.67 130.44,120.01 130.97,120.34 131.5,120.68 132.02,121.02 132.55,121.35 133.08,121.69 133.6,122.02 134.13,122.36 134.66,122.69 135.18,123.03 135.71,123.36 136.24,123.7 136.76,124.03 137.29,124.37 137.82,124.7 138.34,125.04 138.87,125.37 139.4,125.71 139.92,126.05 140.45,126.38 140.98,126.72 141.5,127.05 142.03,127.39 142.56,127.72 143.08,128.06 143.61,128.39 144.14,128.73 144.66,129.06 145.19,129.4 145.72,129.73 146.24,130.07 146.77,130.4 147.3,130.74 147.82,131.08 148.35,131.41 148.88,131.75 149.4,132.08 149.93,132.42 150.46,132.75 150.98,133.09 151.51,133.42 152.04,133.76 152.56,134.09 153.09,134.43 153.62,134.76 154.14,135.1 154.67,135.43 155.2,135.77 155.72,136.11 156.25,136.44 156.78,136.78 157.3,137.11 157.83,137.45 158.36,137.78 158.88,138.12 159.41,138.45 159.94,138.79 160.46,139.12 160.99,139.46 161.52,139.79 162.04,140.13 162.57,140.46 163.1,140.8 163.62,141.14 164.15,141.47 164.68,141.81 165.2,142.14 165.73,142.48 166.26,142.81 166.78,143.15 167.31,143.48 167.84,143.82 168.36,144.15 168.89,144.49 169.42,144.82 169.94,145.16 170.47,145.49 171,145.83 171.52,146.17 172.05,146.5 172.58,146.84 173.1,147.17 173.63,147.51 174.16,147.84 174.68,148.18 175.21,148.51 175.74,148.85 176.26,149.18 176.79,149.52 177.32,149.85 177.84,150.19 178.37,150.52 178.9,150.86 179.42,151.19 179.95,151.53 180.48,151.87 181,152.2 181.53,152.54 182.06,152.87 182.58,153.21 183.11,153.54 183.64,153.88 184.16,154.21 184.69,154.55 185.22,154.88 185.74,155.22 186.27,155.55 186.8,155.89 187.32,156.22 187.85,156.56 188.38,156.9 188.9,157.23 189.43,157.57 189.96,157.9 190.48,158.24 191.01,158.57 191.54,158.91 192.06,159.24 192.59,159.58 193.12,159.91 193.64,160.25 194.17,160.58 194.7,160.92 195.22,161.25 195.75,161.59 196.28,161.93 196.8,162.26 197.33,162.6 197.86,162.93 198.38,163.27 198.91,163.6 199.44,163.94 199.96,164.27 200.49,164.61 201.02,164.94 201.54,165.28 202.07,165.61 202.6,165.95 203.12,166.28 203.65,166.62 204.18,166.96 204.7,167.29 205.23,167.63 205.76,167.96 206.28,168.3 206.81,168.63 207.34,168.97 207.86,169.3 208.39,169.64 208.92,169.97 209.44,170.31 209.97,170.64 210.5,170.98 211.02,171.31 211.55,171.65 212.08,171.99 212.6,172.32 213.13,172.66 213.66,172.99 214.18,173.33 214.71,173.66 215.24,174 215.76,174.33 216.29,174.67 216.82,175 217.34,175.34 217.87,175.67 218.4,176.01 218.92,176.34 219.45,176.68 219.98,177.02 220.5,177.35 221.03,177.69 221.56,178.02 222.08,178.36 222.61,178.69 223.14,179.03 223.66,179.36 224.19,179.7 224.72,180.03 225.24,180.37 225.77,180.7 226.3,181.04 226.82,181.37 227.35,181.71 227.88,182.05 228.4,182.38 228.93,182.72 229.46,183.05 229.98,183.39 230.51,183.72 231.04,184.06 231.56,184.39 232.09,184.73 232.62,185.06 233.14,185.4 233.67,185.73 234.2,186.07 234.72,186.4 235.25,186.74 235.78,187.08 236.3,187.41 236.83,187.75 237.36,188.08 237.88,188.42 238.41,188.75 238.94,189.09 239.46,189.42 239.99,189.76 240.52,190.09 241.04,190.43 241.57,190.76 242.1,191.1 242.62,191.43 243.15,191.77 243.68,192.11 244.2,192.44 244.73,192.78 245.26,193.11 245.78,193.45 246.31,193.78 246.84,194.12 247.36,194.45 247.89,194.79 248.42,195.12 248.94,195.46 249.47,195.79 250,196.13 250.52,196.46 251.05,196.8 251.58,197.14 252.1,197.47 252.63,197.81 253.16,198.14 253.68,198.48 254.21,198.81 254.74,199.15 255.26,199.48 255.79,199.82 256.32,200.15 256.84,200.49 257.37,200.82 257.9,201.16 258.42,201.49 258.95,201.83 259.48,202.17 260,202.5 260.53,202.84 261.06,203.17 261.58,203.51 262.11,203.84 262.64,204.18 263.16,204.51 263.69,204.85 264.22,205.18 264.74,205.52 265.27,205.85 265.8,206.19 266.32,206.52 266.85,206.86 267.38,207.2 267.9,207.53 268.43,207.87 268.96,208.2 269.48,208.54 270.01,208.87 270.54,209.21 271.06,209.54 271.59,209.88 272.12,210.21 272.64,210.55 273.17,210.88 273.7,211.22 274.22,211.55 274.75,211.89 275.28,212.23 275.8,212.56 276.33,212.9 276.86,213.23 277.38,213.57 277.91,213.9 278.44,214.24 278.96,214.57 279.49,214.91 280.02,215.24 280.54,215.58 281.07,215.91 281.6,216.25 282.12,216.58 282.65,216.92 283.18,217.26 283.7,217.59 284.23,217.93 284.76,218.26 285.28,218.6 285.81,218.93 286.34,219.27 286.86,219.6 287.39,219.94 287.92,220.27 288.44,220.61 288.97,220.94 289.5,221.28 290.02,221.61 290.55,221.95 291.08,222.29 291.6,222.62 292.13,222.96 292.66,223.29 293.18,223.63 293.71,223.96 294.24,224.3 294.76,224.63 295.29,224.97 295.82,225.3 296.34,225.64 296.87,225.97 297.4,226.31 297.92,226.64 298.45,226.98 298.98,227.32 299.5,227.65 300.03,227.99 300.56,228.32 301.08,228.66 301.61,228.99 302.14,229.33 302.66,229.66 303.19,230 303.72,230.33 304.24,230.67 304.77,231 305.3,231.34 305.82,231.67 306.35,232.01 306.88,232.35 307.4,232.68 307.93,233.02 308.46,233.35 308.98,233.69 309.51,234.02 310.04,234.36 310.56,234.69 311.09,235.03 311.62,235.36 312.14,235.7 312.67,236.03 313.2,236.37 313.72,236.7 314.25,237.04 314.78,237.38 315.3,237.71 315.83,238.05 316.36,238.38 316.88,238.72 317.41,239.05 317.94,239.39 318.46,239.72 318.99,240.06 319.52,240.39 320.04,240.73 320.57,241.06 321.1,241.4 321.62,241.73 322.15,242.07 322.68,242.41 323.21,242.74 323.73,243.08 324.26,243.41 324.79,243.75 325.31,244.08 325.84,244.42 326.37,244.75 326.89,245.09 327.42,245.42 327.95,245.76 328.47,246.09 329,246.43 329.53,246.76 330.05,247.1 330.58,247.44 331.11,247.77 331.63,248.11 332.16,248.44 332.69,248.78 333.21,249.11 333.74,249.45 334.27,249.78 334.79,250.12 335.32,250.45 335.85,250.79 336.37,251.12 336.9,251.46 337.43,251.79 337.95,252.13 338.48,252.47 339.01,252.8 339.53,253.14 340.06,253.47 340.59,253.81 341.11,254.14 341.64,254.48 342.17,254.81 342.69,255.15 343.22,255.48 343.75,255.82 344.27,256.15 344.8,256.49 345.33,256.82 345.85,257.16 346.38,257.5 346.91,257.83 347.43,258.17 347.96,258.5 348.49,258.84 349.01,259.17 349.54,259.51 350.07,259.84 350.59,260.18 351.12,260.51 351.65,260.85 352.17,261.18 352.7,261.52 353.23,261.85 353.75,262.19 354.28,262.53 354.81,262.86 355.33,263.2 355.86,263.53 356.39,263.87 356.91,264.2 357.44,264.54 357.97,264.87 358.49,265.21 359.02,265.54 359.55,265.88 360.07,266.21 360.6,266.55 361.13,266.88 361.65,267.22 362.18,267.56 362.71,267.89 363.23,268.23 363.76,268.56 364.29,268.9 364.81,269.23 365.34,269.57 365.87,269.9 366.39,270.24 366.92,270.57 367.45,270.91 367.97,271.24 368.5,271.58 369.03,271.91 369.55,272.25 370.08,272.59 370.61,272.92 371.13,273.26 371.66,273.59 372.19,273.93 372.71,274.26 373.24,274.6 373.77,274.93 374.29,275.27 374.82,275.6 375.35,275.94 375.87,276.27 376.4,276.61 376.93,276.94 377.45,277.28 377.98,277.62 378.51,277.95 379.03,278.29 379.56,278.62 380.09,278.96 380.61,279.29 381.14,279.63 381.67,279.96 382.19,280.3 382.72,280.63 383.25,280.97 383.77,281.3 384.3,281.64 384.83,281.97 385.35,282.31 385.88,282.65 386.41,282.98 386.93,283.32 387.46,283.65 387.99,283.99 388.51,284.32 389.04,284.66 389.57,284.99 390.09,285.33 390.62,285.66 391.15,286 391.67,286.33 392.2,286.67 392.73,287 393.25,287.34 393.78,287.68 394.31,288.01 394.83,288.35 395.36,288.68 395.89,289.02 396.41,289.35 396.94,289.69 397.47,290.02 397.99,290.36 398.52,290.69 399.05,291.03 399.57,291.36 400.1,291.7 400.63,292.03 401.15,292.37 401.68,292.71 402.21,293.04 402.73,293.38 403.26,293.71 403.79,294.05 404.31,294.38 404.84,294.72 405.37,295.05 405.89,295.39 406.42,295.72 406.95,296.06 407.47,296.39 408,296.73 408.53,297.06 409.05,297.4 409.58,297.74 410.11,298.07 410.63,298.41 411.16,298.74 411.69,299.08 412.21,299.41 412.74,299.75 413.27,300.08 413.79,300.42 414.32,300.75 414.85,301.09 415.37,301.42 415.9,301.76 416.43,302.09 416.95,302.43 417.48,302.77 418.01,303.1 418.53,303.44 419.06,303.77 419.59,304.11 420.11,304.44 420.64,304.78 421.17,305.11 421.69,305.45 422.22,305.78 422.75,306.12 423.27,306.45 423.8,306.79 424.33,307.12 424.85,307.46 425.38,307.8 425.91,308.13 426.43,308.47 426.96,308.8 427.49,309.14 428.01,309.47 428.54,309.81 429.07,310.14 429.59,310.48 430.12,310.81 430.65,311.15 431.17,311.48 431.7,311.82 432.23,312.15 432.75,312.49 433.28,312.83 433.81,313.16 434.33,313.5 434.86,313.83 435.39,314.17 435.91,314.5 436.44,314.84 436.97,315.17 437.49,315.51 438.02,315.84 438.55,316.18 439.07,316.51 439.6,316.85 440.13,317.18 440.65,317.52 441.18,317.85 441.71,318.19 442.23,318.53 442.76,318.86 443.29,319.2 443.81,319.53 444.34,319.87 444.87,320.2 445.39,320.54 445.92,320.87 446.45,321.21 446.97,321.54 447.5,321.88 448.03,322.21 448.55,322.55 449.08,322.88 449.61,323.22 450.13,323.56 450.66,323.89 451.19,324.23 451.71,324.56 452.24,324.9 452.77,325.23 453.29,325.57 453.82,325.9 454.35,326.24 454.87,326.57 455.4,326.91 455.93,327.24 456.45,327.58 456.98,327.91 457.51,328.25 458.03,328.59 458.56,328.92 459.09,329.26 459.61,329.59 460.14,329.93 460.67,330.26 461.19,330.6 461.72,330.93 462.25,331.27 462.77,331.6 463.3,331.94 463.83,332.27 464.35,332.61 464.88,332.94 465.41,333.28 465.93,333.62 466.46,333.95 466.99,334.29 467.51,334.62 468.04,334.96 468.57,335.29 469.09,335.63 469.62,335.96 470.15,336.3 470.67,336.63 471.2,336.97 471.73,337.3 472.25,337.64 472.78,337.97 473.31,338.31 473.83,338.65 474.36,338.98 474.89,339.32 475.41,339.65 475.94,339.99 476.47,340.32 476.99,340.66 477.52,340.99 478.05,341.33 478.57,341.66 479.1,342 479.63,342.33 480.15,342.67 480.68,343 481.21,343.34 481.73,343.68 482.26,344.01 482.79,344.35 483.31,344.68 483.84,345.02 484.37,345.35 484.89,345.69 485.42,346.02 485.95,346.36 486.47,346.69 487,347.03 487.53,347.36 488.05,347.7 488.58,348.03 489.11,348.37 489.63,348.71 490.16,349.04 490.69,349.38 491.21,349.71 491.74,350.05 492.27,350.38 492.79,350.72 493.32,351.05 493.85,351.39 494.37,351.72 494.9,352.06 495.43,352.39 495.95,352.73 496.48,353.06 497.01,353.4 497.53,353.74 498.06,354.07 498.59,354.41 499.11,354.74 499.64,355.08 500.17,355.41 500.69,355.75 501.22,356.08 501.75,356.42 502.27,356.75 502.8,357.09 503.33,357.42 503.85,357.76 504.38,358.09 504.91,358.43 505.43,358.77 505.96,359.1 506.49,359.44 507.01,359.77 507.54,360.11 508.07,360.44 508.59,360.78 509.12,361.11 509.65,361.45 510.17,361.78 510.7,362.12 511.23,362.45 511.75,362.79 512.28,363.12 512.81,363.46 513.33,363.8 513.86,364.13 514.39,364.47 514.91,364.8 515.44,365.14 515.97,365.47 516.49,365.81 517.02,366.14 517.55,366.48 518.07,366.81 518.6,367.15 519.13,367.48 519.65,367.82 520.18,368.15 520.71,368.49 521.23,368.83 521.76,369.16 522.29,369.5 522.81,369.83 523.34,370.17 523.87,370.5 524.39,370.84 524.92,371.17 525.45,371.51 525.97,371.84 526.5,372.18 527.03,372.51 527.55,372.85 528.08,373.18 528.61,373.52 529.13,373.86 529.66,374.19 530.19,374.53 530.71,374.86 531.24,375.2 531.77,375.53 532.29,375.87 532.82,376.2 533.35,376.54 533.87,376.87 534.4,377.21 534.93,377.54 535.45,377.88 535.98,378.21 536.51,378.55 537.03,378.89 537.56,379.22 538.09,379.56 538.61,379.89 539.14,380.23 539.67,380.56 540.19,380.9 540.72,381.23 541.25,381.57 541.77,381.9 542.3,382.24 542.83,382.57 543.35,382.91 543.88,383.24 544.41,383.58 544.93,383.92 545.46,384.25 545.99,384.59 546.51,384.92 547.04,385.26 547.57,385.59 548.09,385.93 548.62,386.26 549.15,386.6 549.67,386.93 550.2,387.27 550.73,387.6 551.25,387.94 551.78,388.27 552.31,388.61 552.83,388.95 553.36,389.28 553.89,389.62 554.41,389.95 554.94,390.29 555.47,390.62 555.99,390.96 556.52,391.29 557.05,391.63 557.57,391.96 558.1,392.3 558.63,392.63 559.15,392.97 559.68,393.3 560.21,393.64 560.73,393.98 561.26,394.31 561.79,394.65 562.31,394.98 562.84,395.32 563.37,395.65 563.89,395.99 564.42,396.32 564.95,396.66 565.47,396.99 566,397.33 566.53,397.66 567.05,398 567.58,398.33 568.11,398.67 568.63,399.01 569.16,399.34 569.69,399.68 570.21,400.01 570.74,400.35 571.27,400.68 571.79,401.02 572.32,401.35 572.85,401.69 573.37,402.02 573.9,402.36 574.43,402.69 574.95,403.03 575.48,403.36" stroke="rgb(0,0,255)" stroke-width="1.5" stroke-dasharray="none" stroke-opacity="1" fill="none"/>
+                    </g>
+                  </g>
+                  <g id="inz-rect-tp.1.1.1">
+                    <rect id="inz-rect-tp.1.1.1.1" x="48.81" y="62.55" width="526.67" height="325.79" transform="" fill="none" fill-opacity="0"/>
+                  </g>
+                  <g id="container::VP:TOPlayout::GRID.VP.302::VP:PLOTlayout::GRID.VP.303::GRID.VP.304::GRID.VP.305.1">
+                    <g id="inz-xaxis-bottom.1.1.1" font-size="9.6">
+                      <g id="major.1">
+                        <polyline id="major.1.1" points="71.92,62.55 565.41,62.55" fill="none"/>
+                      </g>
+                      <g id="ticks.1">
+                        <polyline id="ticks.1.1" points="71.92,62.55 71.92,53.91" fill="none"/>
+                        <polyline id="ticks.1.2" points="170.62,62.55 170.62,53.91" fill="none"/>
+                        <polyline id="ticks.1.3" points="269.32,62.55 269.32,53.91" fill="none"/>
+                        <polyline id="ticks.1.4" points="368.02,62.55 368.02,53.91" fill="none"/>
+                        <polyline id="ticks.1.5" points="466.72,62.55 466.72,53.91" fill="none"/>
+                        <polyline id="ticks.1.6" points="565.41,62.55 565.41,53.91" fill="none"/>
+                      </g>
+                      <g id="labels.1">
+                        <g id="labels.1.1" transform="translate(71.92, 36.63)" stroke-width="0.1">
+                          <g id="labels.1.1.scale" transform="scale(1, -1)">
+                            <text x="0" y="0" id="labels.1.1.text" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                              <tspan id="labels.1.1.tspan.1" dy="5.15" x="0">0</tspan>
+                            </text>
+                          </g>
+                        </g>
+                        <g id="labels.1.2" transform="translate(170.62, 36.63)" stroke-width="0.1">
+                          <g id="labels.1.2.scale" transform="scale(1, -1)">
+                            <text x="0" y="0" id="labels.1.2.text" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                              <tspan id="labels.1.2.tspan.1" dy="5.15" x="0">10</tspan>
+                            </text>
+                          </g>
+                        </g>
+                        <g id="labels.1.3" transform="translate(269.32, 36.63)" stroke-width="0.1">
+                          <g id="labels.1.3.scale" transform="scale(1, -1)">
+                            <text x="0" y="0" id="labels.1.3.text" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                              <tspan id="labels.1.3.tspan.1" dy="5.15" x="0">20</tspan>
+                            </text>
+                          </g>
+                        </g>
+                        <g id="labels.1.4" transform="translate(368.02, 36.63)" stroke-width="0.1">
+                          <g id="labels.1.4.scale" transform="scale(1, -1)">
+                            <text x="0" y="0" id="labels.1.4.text" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                              <tspan id="labels.1.4.tspan.1" dy="5.15" x="0">30</tspan>
+                            </text>
+                          </g>
+                        </g>
+                        <g id="labels.1.5" transform="translate(466.72, 36.63)" stroke-width="0.1">
+                          <g id="labels.1.5.scale" transform="scale(1, -1)">
+                            <text x="0" y="0" id="labels.1.5.text" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                              <tspan id="labels.1.5.tspan.1" dy="5.15" x="0">40</tspan>
+                            </text>
+                          </g>
+                        </g>
+                        <g id="labels.1.6" transform="translate(565.41, 36.63)" stroke-width="0.1">
+                          <g id="labels.1.6.scale" transform="scale(1, -1)">
+                            <text x="0" y="0" id="labels.1.6.text" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                              <tspan id="labels.1.6.tspan.1" dy="5.15" x="0">50</tspan>
+                            </text>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                    <g id="inz-yaxis-left.1.1.1" font-size="9.6">
+                      <g id="major.2">
+                        <polyline id="major.2.1" points="48.81,74.94 48.81,340.46" fill="none"/>
+                      </g>
+                      <g id="ticks.2">
+                        <polyline id="ticks.2.1" points="48.81,74.94 40.17,74.94" fill="none"/>
+                        <polyline id="ticks.2.2" points="48.81,163.45 40.17,163.45" fill="none"/>
+                        <polyline id="ticks.2.3" points="48.81,251.95 40.17,251.95" fill="none"/>
+                        <polyline id="ticks.2.4" points="48.81,340.46 40.17,340.46" fill="none"/>
+                      </g>
+                      <g id="labels.2">
+                        <g id="labels.2.1" transform="translate(31.53, 74.94)" stroke-width="0.1">
+                          <g id="labels.2.1.scale" transform="scale(1, -1)">
+                            <text x="0" y="0" id="labels.2.1.text" transform="rotate(-90)" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                              <tspan id="labels.2.1.tspan.1" dy="0" x="0">0</tspan>
+                            </text>
+                          </g>
+                        </g>
+                        <g id="labels.2.2" transform="translate(31.53, 163.45)" stroke-width="0.1">
+                          <g id="labels.2.2.scale" transform="scale(1, -1)">
+                            <text x="0" y="0" id="labels.2.2.text" transform="rotate(-90)" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                              <tspan id="labels.2.2.tspan.1" dy="0" x="0">5</tspan>
+                            </text>
+                          </g>
+                        </g>
+                        <g id="labels.2.3" transform="translate(31.53, 251.95)" stroke-width="0.1">
+                          <g id="labels.2.3.scale" transform="scale(1, -1)">
+                            <text x="0" y="0" id="labels.2.3.text" transform="rotate(-90)" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                              <tspan id="labels.2.3.tspan.1" dy="0" x="0">10</tspan>
+                            </text>
+                          </g>
+                        </g>
+                        <g id="labels.2.4" transform="translate(31.53, 340.46)" stroke-width="0.1">
+                          <g id="labels.2.4.scale" transform="scale(1, -1)">
+                            <text x="0" y="0" id="labels.2.4.text" transform="rotate(-90)" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                              <tspan id="labels.2.4.tspan.1" dy="0" x="0">15</tspan>
+                            </text>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                    <g id="inz-yaxis-right.1.1.1" font-size="9.6">
+                      <g id="major.3">
+                        <polyline id="major.3.1" points="575.48,74.94 575.48,340.46" fill="none"/>
+                      </g>
+                      <g id="ticks.3">
+                        <polyline id="ticks.3.1" points="575.48,74.94 584.12,74.94" fill="none"/>
+                        <polyline id="ticks.3.2" points="575.48,163.45 584.12,163.45" fill="none"/>
+                        <polyline id="ticks.3.3" points="575.48,251.95 584.12,251.95" fill="none"/>
+                        <polyline id="ticks.3.4" points="575.48,340.46 584.12,340.46" fill="none"/>
+                      </g>
+                    </g>
+                  </g>
+                  <g id="container::VP:TOPlayout::GRID.VP.302::VP:PLOTlayout::GRID.VP.303::GRID.VP.304::GRID.VP.306.1">
+                    <g id="container::VP:TOPlayout::GRID.VP.302::VP:PLOTlayout::GRID.VP.303::GRID.VP.304::GRID.VP.306::GRID.VP.307.1">
+                      <g id="inz-xaxis-top.1.1.1" font-size="9.6">
+                        <g id="major.4">
+                          <polyline id="major.4.1" points="71.92,388.34 565.41,388.34" fill="none"/>
+                        </g>
+                        <g id="ticks.4">
+                          <polyline id="ticks.4.1" points="71.92,388.34 71.92,396.98" fill="none"/>
+                          <polyline id="ticks.4.2" points="170.62,388.34 170.62,396.98" fill="none"/>
+                          <polyline id="ticks.4.3" points="269.32,388.34 269.32,396.98" fill="none"/>
+                          <polyline id="ticks.4.4" points="368.02,388.34 368.02,396.98" fill="none"/>
+                          <polyline id="ticks.4.5" points="466.72,388.34 466.72,396.98" fill="none"/>
+                          <polyline id="ticks.4.6" points="565.41,388.34 565.41,396.98" fill="none"/>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg> 
+      </div>
+      <div class = "tbl-div table-responsive">
+<table id="table" class="table table-condensed table-hover" cellspacing="0">
+<caption>Data</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;">   </th>
+   <th style="text-align:center;"> Country </th>
+   <th style="text-align:center;"> CO2Emissions </th>
+   <th style="text-align:center;"> EnergyUsePerPerson </th>
+   <th style="text-align:center;"> Populationtotal </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:center;"> Tajikistan </td>
+   <td style="text-align:center;"> 0.4635790 </td>
+   <td style="text-align:center;"> 0.3692888 </td>
+   <td style="text-align:center;"> 6691416 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:center;"> Cyprus </td>
+   <td style="text-align:center;"> 7.9427348 </td>
+   <td style="text-align:center;"> 2.4012624 </td>
+   <td style="text-align:center;"> 1077001 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 3 </td>
+   <td style="text-align:center;"> Mozambique </td>
+   <td style="text-align:center;"> 0.1044199 </td>
+   <td style="text-align:center;"> 0.4206053 </td>
+   <td style="text-align:center;"> 22332900 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 4 </td>
+   <td style="text-align:center;"> Trinidad and Tobago </td>
+   <td style="text-align:center;"> 35.3735926 </td>
+   <td style="text-align:center;"> 14.5308255 </td>
+   <td style="text-align:center;"> 1331040 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 5 </td>
+   <td style="text-align:center;"> Cuba </td>
+   <td style="text-align:center;"> 2.6441748 </td>
+   <td style="text-align:center;"> 0.9329048 </td>
+   <td style="text-align:center;"> 11266905 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 6 </td>
+   <td style="text-align:center;"> Togo </td>
+   <td style="text-align:center;"> 0.2519833 </td>
+   <td style="text-align:center;"> 0.4436149 </td>
+   <td style="text-align:center;"> 5776837 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 7 </td>
+   <td style="text-align:center;"> Austria </td>
+   <td style="text-align:center;"> 8.1787645 </td>
+   <td style="text-align:center;"> 4.0238009 </td>
+   <td style="text-align:center;"> 8341806 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 8 </td>
+   <td style="text-align:center;"> Argentina </td>
+   <td style="text-align:center;"> 4.5855609 </td>
+   <td style="text-align:center;"> 1.9301727 </td>
+   <td style="text-align:center;"> 39714298 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 9 </td>
+   <td style="text-align:center;"> Bolivia </td>
+   <td style="text-align:center;"> 1.4421219 </td>
+   <td style="text-align:center;"> 0.6178648 </td>
+   <td style="text-align:center;"> 9618466 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 10 </td>
+   <td style="text-align:center;"> Japan </td>
+   <td style="text-align:center;"> 9.5426905 </td>
+   <td style="text-align:center;"> 3.8789071 </td>
+   <td style="text-align:center;"> 126544640 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 11 </td>
+   <td style="text-align:center;"> Colombia </td>
+   <td style="text-align:center;"> 1.4760918 </td>
+   <td style="text-align:center;"> 0.6489815 </td>
+   <td style="text-align:center;"> 45005782 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 12 </td>
+   <td style="text-align:center;"> Morocco </td>
+   <td style="text-align:center;"> 1.6362268 </td>
+   <td style="text-align:center;"> 0.4785507 </td>
+   <td style="text-align:center;"> 31321453 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 13 </td>
+   <td style="text-align:center;"> Botswana </td>
+   <td style="text-align:center;"> 2.5472055 </td>
+   <td style="text-align:center;"> 1.1006721 </td>
+   <td style="text-align:center;"> 1954822 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 14 </td>
+   <td style="text-align:center;"> El Salvador </td>
+   <td style="text-align:center;"> 1.0635773 </td>
+   <td style="text-align:center;"> 0.7339852 </td>
+   <td style="text-align:center;"> 6129628 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 15 </td>
+   <td style="text-align:center;"> Ukraine </td>
+   <td style="text-align:center;"> 7.0366642 </td>
+   <td style="text-align:center;"> 2.9431445 </td>
+   <td style="text-align:center;"> 45991584 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 16 </td>
+   <td style="text-align:center;"> Pakistan </td>
+   <td style="text-align:center;"> 0.9506839 </td>
+   <td style="text-align:center;"> 0.4873992 </td>
+   <td style="text-align:center;"> 167442258 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 17 </td>
+   <td style="text-align:center;"> Mexico </td>
+   <td style="text-align:center;"> 4.3081374 </td>
+   <td style="text-align:center;"> 1.6369282 </td>
+   <td style="text-align:center;"> 110627158 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 18 </td>
+   <td style="text-align:center;"> Brazil </td>
+   <td style="text-align:center;"> 2.0237728 </td>
+   <td style="text-align:center;"> 1.2965412 </td>
+   <td style="text-align:center;"> 191543237 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 19 </td>
+   <td style="text-align:center;"> Libya </td>
+   <td style="text-align:center;"> 9.8183302 </td>
+   <td style="text-align:center;"> 3.9793857 </td>
+   <td style="text-align:center;"> 6149620 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 20 </td>
+   <td style="text-align:center;"> Kuwait </td>
+   <td style="text-align:center;"> 31.2947471 </td>
+   <td style="text-align:center;"> 10.9350651 </td>
+   <td style="text-align:center;"> 2548351 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 21 </td>
+   <td style="text-align:center;"> Switzerland </td>
+   <td style="text-align:center;"> 5.3330576 </td>
+   <td style="text-align:center;"> 3.5013337 </td>
+   <td style="text-align:center;"> 7573204 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 22 </td>
+   <td style="text-align:center;"> New Zealand </td>
+   <td style="text-align:center;"> 7.8736568 </td>
+   <td style="text-align:center;"> 4.0791422 </td>
+   <td style="text-align:center;"> 4277809 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 23 </td>
+   <td style="text-align:center;"> Turkey </td>
+   <td style="text-align:center;"> 4.0219026 </td>
+   <td style="text-align:center;"> 1.3888402 </td>
+   <td style="text-align:center;"> 70923730 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 24 </td>
+   <td style="text-align:center;"> Vietnam </td>
+   <td style="text-align:center;"> 1.4933816 </td>
+   <td style="text-align:center;"> 0.5754563 </td>
+   <td style="text-align:center;"> 85951912 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 25 </td>
+   <td style="text-align:center;"> Kenya </td>
+   <td style="text-align:center;"> 0.2663084 </td>
+   <td style="text-align:center;"> 0.4610096 </td>
+   <td style="text-align:center;"> 38455418 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 26 </td>
+   <td style="text-align:center;"> Italy </td>
+   <td style="text-align:center;"> 7.4689423 </td>
+   <td style="text-align:center;"> 2.9416360 </td>
+   <td style="text-align:center;"> 59891479 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 27 </td>
+   <td style="text-align:center;"> India </td>
+   <td style="text-align:center;"> 1.5131827 </td>
+   <td style="text-align:center;"> 0.5257377 </td>
+   <td style="text-align:center;"> 1190863679 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 28 </td>
+   <td style="text-align:center;"> Slovenia </td>
+   <td style="text-align:center;"> 8.5009272 </td>
+   <td style="text-align:center;"> 3.8290257 </td>
+   <td style="text-align:center;"> 2018172 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 29 </td>
+   <td style="text-align:center;"> Belgium </td>
+   <td style="text-align:center;"> 9.8900222 </td>
+   <td style="text-align:center;"> 5.4695816 </td>
+   <td style="text-align:center;"> 10602167 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 30 </td>
+   <td style="text-align:center;"> Armenia </td>
+   <td style="text-align:center;"> 1.8041062 </td>
+   <td style="text-align:center;"> 0.9732011 </td>
+   <td style="text-align:center;"> 3079087 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 31 </td>
+   <td style="text-align:center;"> Jordan </td>
+   <td style="text-align:center;"> 3.6629354 </td>
+   <td style="text-align:center;"> 1.2215265 </td>
+   <td style="text-align:center;"> 5848952 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 32 </td>
+   <td style="text-align:center;"> Haiti </td>
+   <td style="text-align:center;"> 0.2500599 </td>
+   <td style="text-align:center;"> 0.2848426 </td>
+   <td style="text-align:center;"> 9736332 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 33 </td>
+   <td style="text-align:center;"> Yemen </td>
+   <td style="text-align:center;"> 1.0008282 </td>
+   <td style="text-align:center;"> 0.3156707 </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 34 </td>
+   <td style="text-align:center;"> Jamaica </td>
+   <td style="text-align:center;"> 4.3914565 </td>
+   <td style="text-align:center;"> 1.5866597 </td>
+   <td style="text-align:center;"> 2720282 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 35 </td>
+   <td style="text-align:center;"> Peru </td>
+   <td style="text-align:center;"> 1.4500056 </td>
+   <td style="text-align:center;"> 0.5285534 </td>
+   <td style="text-align:center;"> 28463338 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 36 </td>
+   <td style="text-align:center;"> Romania </td>
+   <td style="text-align:center;"> 4.3890536 </td>
+   <td style="text-align:center;"> 1.8384190 </td>
+   <td style="text-align:center;"> 21589544 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 37 </td>
+   <td style="text-align:center;"> Ghana </td>
+   <td style="text-align:center;"> 0.3666008 </td>
+   <td style="text-align:center;"> 0.3850494 </td>
+   <td style="text-align:center;"> 23264176 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 38 </td>
+   <td style="text-align:center;"> Philippines </td>
+   <td style="text-align:center;"> 0.7627881 </td>
+   <td style="text-align:center;"> 0.4436955 </td>
+   <td style="text-align:center;"> 90173139 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 39 </td>
+   <td style="text-align:center;"> Iraq </td>
+   <td style="text-align:center;"> 3.7905889 </td>
+   <td style="text-align:center;"> 0.9428020 </td>
+   <td style="text-align:center;"> 29821136 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 40 </td>
+   <td style="text-align:center;"> Singapore </td>
+   <td style="text-align:center;"> 6.5708118 </td>
+   <td style="text-align:center;"> 4.9236899 </td>
+   <td style="text-align:center;"> 4772216 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 41 </td>
+   <td style="text-align:center;"> Ethiopia </td>
+   <td style="text-align:center;"> 0.0894901 </td>
+   <td style="text-align:center;"> 0.3959094 </td>
+   <td style="text-align:center;"> 79446419 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 42 </td>
+   <td style="text-align:center;"> Malta </td>
+   <td style="text-align:center;"> 6.1827710 </td>
+   <td style="text-align:center;"> 2.0307732 </td>
+   <td style="text-align:center;"> 413946 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 43 </td>
+   <td style="text-align:center;"> Nicaragua </td>
+   <td style="text-align:center;"> 0.7827060 </td>
+   <td style="text-align:center;"> 0.5409141 </td>
+   <td style="text-align:center;"> 5635577 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 44 </td>
+   <td style="text-align:center;"> Cameroon </td>
+   <td style="text-align:center;"> 0.2955416 </td>
+   <td style="text-align:center;"> 0.3409175 </td>
+   <td style="text-align:center;"> 18758778 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 45 </td>
+   <td style="text-align:center;"> Costa Rica </td>
+   <td style="text-align:center;"> 1.9119334 </td>
+   <td style="text-align:center;"> 1.0144609 </td>
+   <td style="text-align:center;"> 4522124 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 46 </td>
+   <td style="text-align:center;"> Angola </td>
+   <td style="text-align:center;"> 1.4426425 </td>
+   <td style="text-align:center;"> 0.6576182 </td>
+   <td style="text-align:center;"> 18037964 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 47 </td>
+   <td style="text-align:center;"> Saudi Arabia </td>
+   <td style="text-align:center;"> 15.9822462 </td>
+   <td style="text-align:center;"> 5.8882458 </td>
+   <td style="text-align:center;"> 26166639 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 48 </td>
+   <td style="text-align:center;"> Iceland </td>
+   <td style="text-align:center;"> 7.1405733 </td>
+   <td style="text-align:center;"> 16.8684683 </td>
+   <td style="text-align:center;"> 310666 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 49 </td>
+   <td style="text-align:center;"> Uruguay </td>
+   <td style="text-align:center;"> 2.4897635 </td>
+   <td style="text-align:center;"> 1.2456755 </td>
+   <td style="text-align:center;"> 3345967 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 50 </td>
+   <td style="text-align:center;"> Panama </td>
+   <td style="text-align:center;"> 1.9966806 </td>
+   <td style="text-align:center;"> 0.9147198 </td>
+   <td style="text-align:center;"> 3406487 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 51 </td>
+   <td style="text-align:center;"> Estonia </td>
+   <td style="text-align:center;"> 13.6952416 </td>
+   <td style="text-align:center;"> 4.0578723 </td>
+   <td style="text-align:center;"> 1342145 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 52 </td>
+   <td style="text-align:center;"> Norway </td>
+   <td style="text-align:center;"> 10.5297688 </td>
+   <td style="text-align:center;"> 6.2500252 </td>
+   <td style="text-align:center;"> 4778959 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 53 </td>
+   <td style="text-align:center;"> Poland </td>
+   <td style="text-align:center;"> 8.2690402 </td>
+   <td style="text-align:center;"> 2.5676135 </td>
+   <td style="text-align:center;"> 38218462 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 54 </td>
+   <td style="text-align:center;"> Chile </td>
+   <td style="text-align:center;"> 4.2079491 </td>
+   <td style="text-align:center;"> 1.8046324 </td>
+   <td style="text-align:center;"> 16795593 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 55 </td>
+   <td style="text-align:center;"> Israel </td>
+   <td style="text-align:center;"> 9.7716442 </td>
+   <td style="text-align:center;"> 3.1309753 </td>
+   <td style="text-align:center;"> 7092324 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 56 </td>
+   <td style="text-align:center;"> Bosnia and Herzegovina </td>
+   <td style="text-align:center;"> 8.2685861 </td>
+   <td style="text-align:center;"> 1.5775687 </td>
+   <td style="text-align:center;"> 3774164 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 57 </td>
+   <td style="text-align:center;"> Bulgaria </td>
+   <td style="text-align:center;"> 6.6901391 </td>
+   <td style="text-align:center;"> 2.5961196 </td>
+   <td style="text-align:center;"> 7591322 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 58 </td>
+   <td style="text-align:center;"> Sri Lanka </td>
+   <td style="text-align:center;"> 0.5809702 </td>
+   <td style="text-align:center;"> 0.4422963 </td>
+   <td style="text-align:center;"> 20473799 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 59 </td>
+   <td style="text-align:center;"> Lebanon </td>
+   <td style="text-align:center;"> 4.0864764 </td>
+   <td style="text-align:center;"> 1.3019075 </td>
+   <td style="text-align:center;"> 4166915 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 60 </td>
+   <td style="text-align:center;"> Sudan </td>
+   <td style="text-align:center;"> 0.3649766 </td>
+   <td style="text-align:center;"> 0.3642741 </td>
+   <td style="text-align:center;"> 32941836 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 61 </td>
+   <td style="text-align:center;"> Benin </td>
+   <td style="text-align:center;"> 0.5375392 </td>
+   <td style="text-align:center;"> 0.3924895 </td>
+   <td style="text-align:center;"> 8355980 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 62 </td>
+   <td style="text-align:center;"> Australia </td>
+   <td style="text-align:center;"> 18.2656569 </td>
+   <td style="text-align:center;"> 5.7788173 </td>
+   <td style="text-align:center;"> 21513817 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 63 </td>
+   <td style="text-align:center;"> Serbia </td>
+   <td style="text-align:center;"> 5.2861258 </td>
+   <td style="text-align:center;"> 2.2946432 </td>
+   <td style="text-align:center;"> 9841360 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 64 </td>
+   <td style="text-align:center;"> Malaysia </td>
+   <td style="text-align:center;"> 7.6123775 </td>
+   <td style="text-align:center;"> 2.6545809 </td>
+   <td style="text-align:center;"> 27502008 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 65 </td>
+   <td style="text-align:center;"> Spain </td>
+   <td style="text-align:center;"> 7.2930888 </td>
+   <td style="text-align:center;"> 3.0518988 </td>
+   <td style="text-align:center;"> 45146258 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 66 </td>
+   <td style="text-align:center;"> Latvia </td>
+   <td style="text-align:center;"> 3.3418487 </td>
+   <td style="text-align:center;"> 1.9789585 </td>
+   <td style="text-align:center;"> 2271198 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 67 </td>
+   <td style="text-align:center;"> Belarus </td>
+   <td style="text-align:center;"> 6.4881739 </td>
+   <td style="text-align:center;"> 2.9311958 </td>
+   <td style="text-align:center;"> 9680690 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 68 </td>
+   <td style="text-align:center;"> Honduras </td>
+   <td style="text-align:center;"> 1.1653614 </td>
+   <td style="text-align:center;"> 0.6364092 </td>
+   <td style="text-align:center;"> 7302742 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 69 </td>
+   <td style="text-align:center;"> United Kingdom </td>
+   <td style="text-align:center;"> 8.5228762 </td>
+   <td style="text-align:center;"> 3.3943645 </td>
+   <td style="text-align:center;"> 61270318 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 70 </td>
+   <td style="text-align:center;"> Uzbekistan </td>
+   <td style="text-align:center;"> 4.6581427 </td>
+   <td style="text-align:center;"> 1.8497196 </td>
+   <td style="text-align:center;"> 26811974 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 71 </td>
+   <td style="text-align:center;"> Lithuania </td>
+   <td style="text-align:center;"> 4.5028487 </td>
+   <td style="text-align:center;"> 2.8083955 </td>
+   <td style="text-align:center;"> 3359799 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 72 </td>
+   <td style="text-align:center;"> Denmark </td>
+   <td style="text-align:center;"> 8.5214980 </td>
+   <td style="text-align:center;"> 3.4950990 </td>
+   <td style="text-align:center;"> 5497312 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 73 </td>
+   <td style="text-align:center;"> Nigeria </td>
+   <td style="text-align:center;"> 0.6153711 </td>
+   <td style="text-align:center;"> 0.7381254 </td>
+   <td style="text-align:center;"> 150665730 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 74 </td>
+   <td style="text-align:center;"> Sweden </td>
+   <td style="text-align:center;"> 5.3156884 </td>
+   <td style="text-align:center;"> 5.3799591 </td>
+   <td style="text-align:center;"> 9236872 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 75 </td>
+   <td style="text-align:center;"> Ireland </td>
+   <td style="text-align:center;"> 9.9709785 </td>
+   <td style="text-align:center;"> 3.3793051 </td>
+   <td style="text-align:center;"> 4352866 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 76 </td>
+   <td style="text-align:center;"> Germany </td>
+   <td style="text-align:center;"> 9.5371698 </td>
+   <td style="text-align:center;"> 4.0689540 </td>
+   <td style="text-align:center;"> 82475271 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 77 </td>
+   <td style="text-align:center;"> Bangladesh </td>
+   <td style="text-align:center;"> 0.3192114 </td>
+   <td style="text-align:center;"> 0.1910530 </td>
+   <td style="text-align:center;"> 145478300 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 78 </td>
+   <td style="text-align:center;"> China </td>
+   <td style="text-align:center;"> 5.2978996 </td>
+   <td style="text-align:center;"> 1.5748313 </td>
+   <td style="text-align:center;"> 1328275524 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 79 </td>
+   <td style="text-align:center;"> United Arab Emirates </td>
+   <td style="text-align:center;"> 24.6568330 </td>
+   <td style="text-align:center;"> 9.3978469 </td>
+   <td style="text-align:center;"> 6206623 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 80 </td>
+   <td style="text-align:center;"> Azerbaijan </td>
+   <td style="text-align:center;"> 5.9184221 </td>
+   <td style="text-align:center;"> 1.5154813 </td>
+   <td style="text-align:center;"> 8943600 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 81 </td>
+   <td style="text-align:center;"> Georgia </td>
+   <td style="text-align:center;"> 1.4194298 </td>
+   <td style="text-align:center;"> 0.6853934 </td>
+   <td style="text-align:center;"> 4394018 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 82 </td>
+   <td style="text-align:center;"> Montenegro </td>
+   <td style="text-align:center;"> 7.8673204 </td>
+   <td style="text-align:center;"> 1.3113742 </td>
+   <td style="text-align:center;"> 629185 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 83 </td>
+   <td style="text-align:center;"> Bahrain </td>
+   <td style="text-align:center;"> 23.0900292 </td>
+   <td style="text-align:center;"> 8.7847075 </td>
+   <td style="text-align:center;"> 1052359 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 84 </td>
+   <td style="text-align:center;"> North Korea </td>
+   <td style="text-align:center;"> 3.2539969 </td>
+   <td style="text-align:center;"> 0.8357613 </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 85 </td>
+   <td style="text-align:center;"> Slovak Republic </td>
+   <td style="text-align:center;"> 6.9016545 </td>
+   <td style="text-align:center;"> 3.3854885 </td>
+   <td style="text-align:center;"> 5441304 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 86 </td>
+   <td style="text-align:center;"> Myanmar </td>
+   <td style="text-align:center;"> 0.2702839 </td>
+   <td style="text-align:center;"> 0.3181536 </td>
+   <td style="text-align:center;"> 47250315 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 87 </td>
+   <td style="text-align:center;"> Thailand </td>
+   <td style="text-align:center;"> 4.1556426 </td>
+   <td style="text-align:center;"> 1.5769572 </td>
+   <td style="text-align:center;"> 68267982 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 88 </td>
+   <td style="text-align:center;"> Cambodia </td>
+   <td style="text-align:center;"> 0.3583733 </td>
+   <td style="text-align:center;"> 0.2541862 </td>
+   <td style="text-align:center;"> 13822644 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 89 </td>
+   <td style="text-align:center;"> Russian Federation </td>
+   <td style="text-align:center;"> 11.9828969 </td>
+   <td style="text-align:center;"> 4.8501776 </td>
+   <td style="text-align:center;"> 143163100 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 90 </td>
+   <td style="text-align:center;"> Mongolia </td>
+   <td style="text-align:center;"> 4.1017582 </td>
+   <td style="text-align:center;"> 1.1831148 </td>
+   <td style="text-align:center;"> 2667474 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 91 </td>
+   <td style="text-align:center;"> Algeria </td>
+   <td style="text-align:center;"> 3.2326665 </td>
+   <td style="text-align:center;"> 1.0876192 </td>
+   <td style="text-align:center;"> 34428028 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 92 </td>
+   <td style="text-align:center;"> Croatia </td>
+   <td style="text-align:center;"> 5.2895623 </td>
+   <td style="text-align:center;"> 2.0431942 </td>
+   <td style="text-align:center;"> 4418387 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 93 </td>
+   <td style="text-align:center;"> Zambia </td>
+   <td style="text-align:center;"> 0.1557938 </td>
+   <td style="text-align:center;"> 0.6172514 </td>
+   <td style="text-align:center;"> 12379612 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 94 </td>
+   <td style="text-align:center;"> Albania </td>
+   <td style="text-align:center;"> 1.2977527 </td>
+   <td style="text-align:center;"> 0.6556513 </td>
+   <td style="text-align:center;"> 3181397 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 95 </td>
+   <td style="text-align:center;"> United States of America </td>
+   <td style="text-align:center;"> 18.5459917 </td>
+   <td style="text-align:center;"> 7.4879303 </td>
+   <td style="text-align:center;"> 304989064 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 96 </td>
+   <td style="text-align:center;"> Greece </td>
+   <td style="text-align:center;"> 8.6618850 </td>
+   <td style="text-align:center;"> 2.7069803 </td>
+   <td style="text-align:center;"> 11291807 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 97 </td>
+   <td style="text-align:center;"> Oman </td>
+   <td style="text-align:center;"> 15.9586362 </td>
+   <td style="text-align:center;"> 6.0255696 </td>
+   <td style="text-align:center;"> 2636963 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 98 </td>
+   <td style="text-align:center;"> Portugal </td>
+   <td style="text-align:center;"> 5.4869264 </td>
+   <td style="text-align:center;"> 2.2998794 </td>
+   <td style="text-align:center;"> 10634612 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 99 </td>
+   <td style="text-align:center;"> Canada </td>
+   <td style="text-align:center;"> 16.3503986 </td>
+   <td style="text-align:center;"> 7.9458465 </td>
+   <td style="text-align:center;"> 33327954 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 100 </td>
+   <td style="text-align:center;"> Egypt </td>
+   <td style="text-align:center;"> 2.6850461 </td>
+   <td style="text-align:center;"> 0.9175237 </td>
+   <td style="text-align:center;"> 78323298 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 101 </td>
+   <td style="text-align:center;"> Finland </td>
+   <td style="text-align:center;"> 10.5482462 </td>
+   <td style="text-align:center;"> 6.6388225 </td>
+   <td style="text-align:center;"> 5316334 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 102 </td>
+   <td style="text-align:center;"> Ecuador </td>
+   <td style="text-align:center;"> 2.1105178 </td>
+   <td style="text-align:center;"> 0.7844938 </td>
+   <td style="text-align:center;"> 14056740 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 103 </td>
+   <td style="text-align:center;"> Venezuela </td>
+   <td style="text-align:center;"> 6.4966978 </td>
+   <td style="text-align:center;"> 2.5118145 </td>
+   <td style="text-align:center;"> 28057485 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 104 </td>
+   <td style="text-align:center;"> Netherlands </td>
+   <td style="text-align:center;"> 10.5330281 </td>
+   <td style="text-align:center;"> 4.8371669 </td>
+   <td style="text-align:center;"> 16503263 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 105 </td>
+   <td style="text-align:center;"> Luxembourg </td>
+   <td style="text-align:center;"> 21.8969105 </td>
+   <td style="text-align:center;"> 8.6097964 </td>
+   <td style="text-align:center;"> 486781 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 106 </td>
+   <td style="text-align:center;"> Senegal </td>
+   <td style="text-align:center;"> 0.4504350 </td>
+   <td style="text-align:center;"> 0.2610367 </td>
+   <td style="text-align:center;"> 11787123 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 107 </td>
+   <td style="text-align:center;"> Eritrea </td>
+   <td style="text-align:center;"> 0.0837456 </td>
+   <td style="text-align:center;"> 0.1368855 </td>
+   <td style="text-align:center;"> 4947521 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 108 </td>
+   <td style="text-align:center;"> Cote d'Ivoire </td>
+   <td style="text-align:center;"> 0.3694281 </td>
+   <td style="text-align:center;"> 0.5413207 </td>
+   <td style="text-align:center;"> 18987007 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 109 </td>
+   <td style="text-align:center;"> Iran </td>
+   <td style="text-align:center;"> 8.0250015 </td>
+   <td style="text-align:center;"> 2.8192032 </td>
+   <td style="text-align:center;"> 72289291 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 110 </td>
+   <td style="text-align:center;"> South Africa </td>
+   <td style="text-align:center;"> 9.4266222 </td>
+   <td style="text-align:center;"> 3.0275962 </td>
+   <td style="text-align:center;"> 49319363 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 111 </td>
+   <td style="text-align:center;"> Indonesia </td>
+   <td style="text-align:center;"> 1.7555124 </td>
+   <td style="text-align:center;"> 0.7955640 </td>
+   <td style="text-align:center;"> 234951154 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 112 </td>
+   <td style="text-align:center;"> Nepal </td>
+   <td style="text-align:center;"> 0.1054130 </td>
+   <td style="text-align:center;"> 0.3320693 </td>
+   <td style="text-align:center;"> 28905358 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 113 </td>
+   <td style="text-align:center;"> France </td>
+   <td style="text-align:center;"> 6.0703484 </td>
+   <td style="text-align:center;"> 4.1136215 </td>
+   <td style="text-align:center;"> 62098413 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 114 </td>
+   <td style="text-align:center;"> Turkmenistan </td>
+   <td style="text-align:center;"> 11.1869805 </td>
+   <td style="text-align:center;"> 4.4937471 </td>
+   <td style="text-align:center;"> 4918396 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 115 </td>
+   <td style="text-align:center;"> Brunei </td>
+   <td style="text-align:center;"> 27.6028196 </td>
+   <td style="text-align:center;"> 9.4335097 </td>
+   <td style="text-align:center;"> 384695 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 116 </td>
+   <td style="text-align:center;"> Hungary </td>
+   <td style="text-align:center;"> 5.4528659 </td>
+   <td style="text-align:center;"> 2.6357800 </td>
+   <td style="text-align:center;"> 10021886 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 117 </td>
+   <td style="text-align:center;"> Guatemala </td>
+   <td style="text-align:center;"> 0.9119232 </td>
+   <td style="text-align:center;"> 0.5957955 </td>
+   <td style="text-align:center;"> 13690846 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 118 </td>
+   <td style="text-align:center;"> Zimbabwe </td>
+   <td style="text-align:center;"> 0.7288253 </td>
+   <td style="text-align:center;"> 0.7447833 </td>
+   <td style="text-align:center;"> 12451543 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 119 </td>
+   <td style="text-align:center;"> Kazakhstan </td>
+   <td style="text-align:center;"> 14.6543986 </td>
+   <td style="text-align:center;"> 4.4790423 </td>
+   <td style="text-align:center;"> 15655345 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 120 </td>
+   <td style="text-align:center;"> Qatar </td>
+   <td style="text-align:center;"> 48.5943775 </td>
+   <td style="text-align:center;"> 15.3104308 </td>
+   <td style="text-align:center;"> 1396060 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 121 </td>
+   <td style="text-align:center;"> Tunisia </td>
+   <td style="text-align:center;"> 2.4406695 </td>
+   <td style="text-align:center;"> 0.9126740 </td>
+   <td style="text-align:center;"> 10247325 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 122 </td>
+   <td style="text-align:center;"> Gabon </td>
+   <td style="text-align:center;"> 1.5548400 </td>
+   <td style="text-align:center;"> 1.3717088 </td>
+   <td style="text-align:center;"> 1450310 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 123 </td>
+   <td style="text-align:center;"> Paraguay </td>
+   <td style="text-align:center;"> 0.6985817 </td>
+   <td style="text-align:center;"> 0.6978737 </td>
+   <td style="text-align:center;"> 6230242 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 124 </td>
+   <td style="text-align:center;"> Namibia </td>
+   <td style="text-align:center;"> 1.9079674 </td>
+   <td style="text-align:center;"> 0.7382707 </td>
+   <td style="text-align:center;"> 2200422 </td>
+  </tr>
+</tbody>
+</table>
+      </div>
+    </div>
+
+    <!-- help guide -->
+    <div class = "help-overlay">
+      <div class= "help-info">
+        <h4> <span class = "glyphicon glyphicon-question-sign title"> </span> Help </h4>
+        <span class = "glyphicon glyphicon-stats"> </span><strong> Plot </strong> show/hide plot <br />
+        <span class = "glyphicon glyphicon-list-alt"> </span><strong> Table </strong> show/hide table <br/>
+        <span class = "glyphicon glyphicon-refresh"> </span><strong> Reset </strong> clear all selections/return <br />
+        <strong>Variable to display</strong> select variable/s to display in plot <br/>
+        <br/>
+        <h5>PLOT SELECTION</h5>
+        <strong> Click </strong> for a single selection <br />
+        Hold <strong>Shift + Click</strong> for multiple selections  <br/>
+        (disabled for bar charts) <br/>
+        <strong>Drag + hold</strong> to draw a selection box <br/>
+        <br/>
+        <h5> TABLE SELECTION </h5> (disabled for bar charts) <br/>
+        <strong> Click </strong> on a row for a single selection <br />
+        Click again on the same row to deselect it <br />
+        <br/>
+        <h5>ADDITIONAL FEATURES FOR MAPS</h5>
+        <strong>Slider:</strong> Drag to view a certain time period <br />
+        <strong>Pan and Zoom:</strong> Drag/scroll mouse <br />
+        <hr />
+        Found a bug or got suggestions? Contact us!  <br/>
+        <a href="https://www.stat.auckland.ac.nz/~wild/iNZight/support/contact/">
+          <img alt = "inzight-logo" class="logo" src = "https://www.stat.auckland.ac.nz/~wild/iNZight/img/inzight_transp.png" />
+        </a>
+      </div>
+    </div>
+<script type='text/javascript'> var chart = {"type":["scatter"],"varNames":["Country","CO2Emissions","EnergyUsePerPerson","Populationtotal"],"data":[{"Country":"Tajikistan","CO2Emissions":0.4636,"EnergyUsePerPerson":0.3693,"Populationtotal":6691416},{"Country":"Cyprus","CO2Emissions":7.9427,"EnergyUsePerPerson":2.4013,"Populationtotal":1077001},{"Country":"Mozambique","CO2Emissions":0.1044,"EnergyUsePerPerson":0.4206,"Populationtotal":22332900},{"Country":"Trinidad and Tobago","CO2Emissions":35.3736,"EnergyUsePerPerson":14.5308,"Populationtotal":1331040},{"Country":"Cuba","CO2Emissions":2.6442,"EnergyUsePerPerson":0.9329,"Populationtotal":11266905},{"Country":"Togo","CO2Emissions":0.252,"EnergyUsePerPerson":0.4436,"Populationtotal":5776837},{"Country":"Austria","CO2Emissions":8.1788,"EnergyUsePerPerson":4.0238,"Populationtotal":8341806},{"Country":"Argentina","CO2Emissions":4.5856,"EnergyUsePerPerson":1.9302,"Populationtotal":39714298},{"Country":"Bolivia","CO2Emissions":1.4421,"EnergyUsePerPerson":0.6179,"Populationtotal":9618466},{"Country":"Japan","CO2Emissions":9.5427,"EnergyUsePerPerson":3.8789,"Populationtotal":126544640},{"Country":"Colombia","CO2Emissions":1.4761,"EnergyUsePerPerson":0.649,"Populationtotal":45005782},{"Country":"Morocco","CO2Emissions":1.6362,"EnergyUsePerPerson":0.4786,"Populationtotal":31321453},{"Country":"Botswana","CO2Emissions":2.5472,"EnergyUsePerPerson":1.1007,"Populationtotal":1954822},{"Country":"El Salvador","CO2Emissions":1.0636,"EnergyUsePerPerson":0.734,"Populationtotal":6129628},{"Country":"Ukraine","CO2Emissions":7.0367,"EnergyUsePerPerson":2.9431,"Populationtotal":45991584},{"Country":"Pakistan","CO2Emissions":0.9507,"EnergyUsePerPerson":0.4874,"Populationtotal":167442258},{"Country":"Mexico","CO2Emissions":4.3081,"EnergyUsePerPerson":1.6369,"Populationtotal":110627158},{"Country":"Brazil","CO2Emissions":2.0238,"EnergyUsePerPerson":1.2965,"Populationtotal":191543237},{"Country":"Libya","CO2Emissions":9.8183,"EnergyUsePerPerson":3.9794,"Populationtotal":6149620},{"Country":"Kuwait","CO2Emissions":31.2947,"EnergyUsePerPerson":10.9351,"Populationtotal":2548351},{"Country":"Switzerland","CO2Emissions":5.3331,"EnergyUsePerPerson":3.5013,"Populationtotal":7573204},{"Country":"New Zealand","CO2Emissions":7.8737,"EnergyUsePerPerson":4.0791,"Populationtotal":4277809},{"Country":"Turkey","CO2Emissions":4.0219,"EnergyUsePerPerson":1.3888,"Populationtotal":70923730},{"Country":"Vietnam","CO2Emissions":1.4934,"EnergyUsePerPerson":0.5755,"Populationtotal":85951912},{"Country":"Kenya","CO2Emissions":0.2663,"EnergyUsePerPerson":0.461,"Populationtotal":38455418},{"Country":"Italy","CO2Emissions":7.4689,"EnergyUsePerPerson":2.9416,"Populationtotal":59891479},{"Country":"India","CO2Emissions":1.5132,"EnergyUsePerPerson":0.5257,"Populationtotal":1190863679},{"Country":"Slovenia","CO2Emissions":8.5009,"EnergyUsePerPerson":3.829,"Populationtotal":2018172},{"Country":"Belgium","CO2Emissions":9.89,"EnergyUsePerPerson":5.4696,"Populationtotal":10602167},{"Country":"Armenia","CO2Emissions":1.8041,"EnergyUsePerPerson":0.9732,"Populationtotal":3079087},{"Country":"Jordan","CO2Emissions":3.6629,"EnergyUsePerPerson":1.2215,"Populationtotal":5848952},{"Country":"Haiti","CO2Emissions":0.2501,"EnergyUsePerPerson":0.2848,"Populationtotal":9736332},{"Country":"Yemen","CO2Emissions":1.0008,"EnergyUsePerPerson":0.3157},{"Country":"Jamaica","CO2Emissions":4.3915,"EnergyUsePerPerson":1.5867,"Populationtotal":2720282},{"Country":"Peru","CO2Emissions":1.45,"EnergyUsePerPerson":0.5286,"Populationtotal":28463338},{"Country":"Romania","CO2Emissions":4.3891,"EnergyUsePerPerson":1.8384,"Populationtotal":21589544},{"Country":"Ghana","CO2Emissions":0.3666,"EnergyUsePerPerson":0.385,"Populationtotal":23264176},{"Country":"Philippines","CO2Emissions":0.7628,"EnergyUsePerPerson":0.4437,"Populationtotal":90173139},{"Country":"Iraq","CO2Emissions":3.7906,"EnergyUsePerPerson":0.9428,"Populationtotal":29821136},{"Country":"Singapore","CO2Emissions":6.5708,"EnergyUsePerPerson":4.9237,"Populationtotal":4772216},{"Country":"Ethiopia","CO2Emissions":0.0895,"EnergyUsePerPerson":0.3959,"Populationtotal":79446419},{"Country":"Malta","CO2Emissions":6.1828,"EnergyUsePerPerson":2.0308,"Populationtotal":413946},{"Country":"Nicaragua","CO2Emissions":0.7827,"EnergyUsePerPerson":0.5409,"Populationtotal":5635577},{"Country":"Cameroon","CO2Emissions":0.2955,"EnergyUsePerPerson":0.3409,"Populationtotal":18758778},{"Country":"Costa Rica","CO2Emissions":1.9119,"EnergyUsePerPerson":1.0145,"Populationtotal":4522124},{"Country":"Angola","CO2Emissions":1.4426,"EnergyUsePerPerson":0.6576,"Populationtotal":18037964},{"Country":"Saudi Arabia","CO2Emissions":15.9822,"EnergyUsePerPerson":5.8882,"Populationtotal":26166639},{"Country":"Iceland","CO2Emissions":7.1406,"EnergyUsePerPerson":16.8685,"Populationtotal":310666},{"Country":"Uruguay","CO2Emissions":2.4898,"EnergyUsePerPerson":1.2457,"Populationtotal":3345967},{"Country":"Panama","CO2Emissions":1.9967,"EnergyUsePerPerson":0.9147,"Populationtotal":3406487},{"Country":"Estonia","CO2Emissions":13.6952,"EnergyUsePerPerson":4.0579,"Populationtotal":1342145},{"Country":"Norway","CO2Emissions":10.5298,"EnergyUsePerPerson":6.25,"Populationtotal":4778959},{"Country":"Poland","CO2Emissions":8.269,"EnergyUsePerPerson":2.5676,"Populationtotal":38218462},{"Country":"Chile","CO2Emissions":4.2079,"EnergyUsePerPerson":1.8046,"Populationtotal":16795593},{"Country":"Israel","CO2Emissions":9.7716,"EnergyUsePerPerson":3.131,"Populationtotal":7092324},{"Country":"Bosnia and Herzegovina","CO2Emissions":8.2686,"EnergyUsePerPerson":1.5776,"Populationtotal":3774164},{"Country":"Bulgaria","CO2Emissions":6.6901,"EnergyUsePerPerson":2.5961,"Populationtotal":7591322},{"Country":"Sri Lanka","CO2Emissions":0.581,"EnergyUsePerPerson":0.4423,"Populationtotal":20473799},{"Country":"Lebanon","CO2Emissions":4.0865,"EnergyUsePerPerson":1.3019,"Populationtotal":4166915},{"Country":"Sudan","CO2Emissions":0.365,"EnergyUsePerPerson":0.3643,"Populationtotal":32941836},{"Country":"Benin","CO2Emissions":0.5375,"EnergyUsePerPerson":0.3925,"Populationtotal":8355980},{"Country":"Australia","CO2Emissions":18.2657,"EnergyUsePerPerson":5.7788,"Populationtotal":21513817},{"Country":"Serbia","CO2Emissions":5.2861,"EnergyUsePerPerson":2.2946,"Populationtotal":9841360},{"Country":"Malaysia","CO2Emissions":7.6124,"EnergyUsePerPerson":2.6546,"Populationtotal":27502008},{"Country":"Spain","CO2Emissions":7.2931,"EnergyUsePerPerson":3.0519,"Populationtotal":45146258},{"Country":"Latvia","CO2Emissions":3.3418,"EnergyUsePerPerson":1.979,"Populationtotal":2271198},{"Country":"Belarus","CO2Emissions":6.4882,"EnergyUsePerPerson":2.9312,"Populationtotal":9680690},{"Country":"Honduras","CO2Emissions":1.1654,"EnergyUsePerPerson":0.6364,"Populationtotal":7302742},{"Country":"United Kingdom","CO2Emissions":8.5229,"EnergyUsePerPerson":3.3944,"Populationtotal":61270318},{"Country":"Uzbekistan","CO2Emissions":4.6581,"EnergyUsePerPerson":1.8497,"Populationtotal":26811974},{"Country":"Lithuania","CO2Emissions":4.5028,"EnergyUsePerPerson":2.8084,"Populationtotal":3359799},{"Country":"Denmark","CO2Emissions":8.5215,"EnergyUsePerPerson":3.4951,"Populationtotal":5497312},{"Country":"Nigeria","CO2Emissions":0.6154,"EnergyUsePerPerson":0.7381,"Populationtotal":150665730},{"Country":"Sweden","CO2Emissions":5.3157,"EnergyUsePerPerson":5.38,"Populationtotal":9236872},{"Country":"Ireland","CO2Emissions":9.971,"EnergyUsePerPerson":3.3793,"Populationtotal":4352866},{"Country":"Germany","CO2Emissions":9.5372,"EnergyUsePerPerson":4.069,"Populationtotal":82475271},{"Country":"Bangladesh","CO2Emissions":0.3192,"EnergyUsePerPerson":0.1911,"Populationtotal":145478300},{"Country":"China","CO2Emissions":5.2979,"EnergyUsePerPerson":1.5748,"Populationtotal":1328275524},{"Country":"United Arab Emirates","CO2Emissions":24.6568,"EnergyUsePerPerson":9.3978,"Populationtotal":6206623},{"Country":"Azerbaijan","CO2Emissions":5.9184,"EnergyUsePerPerson":1.5155,"Populationtotal":8943600},{"Country":"Georgia","CO2Emissions":1.4194,"EnergyUsePerPerson":0.6854,"Populationtotal":4394018},{"Country":"Montenegro","CO2Emissions":7.8673,"EnergyUsePerPerson":1.3114,"Populationtotal":629185},{"Country":"Bahrain","CO2Emissions":23.09,"EnergyUsePerPerson":8.7847,"Populationtotal":1052359},{"Country":"North Korea","CO2Emissions":3.254,"EnergyUsePerPerson":0.8358},{"Country":"Slovak Republic","CO2Emissions":6.9017,"EnergyUsePerPerson":3.3855,"Populationtotal":5441304},{"Country":"Myanmar","CO2Emissions":0.2703,"EnergyUsePerPerson":0.3182,"Populationtotal":47250315},{"Country":"Thailand","CO2Emissions":4.1556,"EnergyUsePerPerson":1.577,"Populationtotal":68267982},{"Country":"Cambodia","CO2Emissions":0.3584,"EnergyUsePerPerson":0.2542,"Populationtotal":13822644},{"Country":"Russian Federation","CO2Emissions":11.9829,"EnergyUsePerPerson":4.8502,"Populationtotal":143163100},{"Country":"Mongolia","CO2Emissions":4.1018,"EnergyUsePerPerson":1.1831,"Populationtotal":2667474},{"Country":"Algeria","CO2Emissions":3.2327,"EnergyUsePerPerson":1.0876,"Populationtotal":34428028},{"Country":"Croatia","CO2Emissions":5.2896,"EnergyUsePerPerson":2.0432,"Populationtotal":4418387},{"Country":"Zambia","CO2Emissions":0.1558,"EnergyUsePerPerson":0.6173,"Populationtotal":12379612},{"Country":"Albania","CO2Emissions":1.2978,"EnergyUsePerPerson":0.6557,"Populationtotal":3181397},{"Country":"United States of America","CO2Emissions":18.546,"EnergyUsePerPerson":7.4879,"Populationtotal":304989064},{"Country":"Greece","CO2Emissions":8.6619,"EnergyUsePerPerson":2.707,"Populationtotal":11291807},{"Country":"Oman","CO2Emissions":15.9586,"EnergyUsePerPerson":6.0256,"Populationtotal":2636963},{"Country":"Portugal","CO2Emissions":5.4869,"EnergyUsePerPerson":2.2999,"Populationtotal":10634612},{"Country":"Canada","CO2Emissions":16.3504,"EnergyUsePerPerson":7.9458,"Populationtotal":33327954},{"Country":"Egypt","CO2Emissions":2.685,"EnergyUsePerPerson":0.9175,"Populationtotal":78323298},{"Country":"Finland","CO2Emissions":10.5482,"EnergyUsePerPerson":6.6388,"Populationtotal":5316334},{"Country":"Ecuador","CO2Emissions":2.1105,"EnergyUsePerPerson":0.7845,"Populationtotal":14056740},{"Country":"Venezuela","CO2Emissions":6.4967,"EnergyUsePerPerson":2.5118,"Populationtotal":28057485},{"Country":"Netherlands","CO2Emissions":10.533,"EnergyUsePerPerson":4.8372,"Populationtotal":16503263},{"Country":"Luxembourg","CO2Emissions":21.8969,"EnergyUsePerPerson":8.6098,"Populationtotal":486781},{"Country":"Senegal","CO2Emissions":0.4504,"EnergyUsePerPerson":0.261,"Populationtotal":11787123},{"Country":"Eritrea","CO2Emissions":0.0837,"EnergyUsePerPerson":0.1369,"Populationtotal":4947521},{"Country":"Cote d'Ivoire","CO2Emissions":0.3694,"EnergyUsePerPerson":0.5413,"Populationtotal":18987007},{"Country":"Iran","CO2Emissions":8.025,"EnergyUsePerPerson":2.8192,"Populationtotal":72289291},{"Country":"South Africa","CO2Emissions":9.4266,"EnergyUsePerPerson":3.0276,"Populationtotal":49319363},{"Country":"Indonesia","CO2Emissions":1.7555,"EnergyUsePerPerson":0.7956,"Populationtotal":234951154},{"Country":"Nepal","CO2Emissions":0.1054,"EnergyUsePerPerson":0.3321,"Populationtotal":28905358},{"Country":"France","CO2Emissions":6.0703,"EnergyUsePerPerson":4.1136,"Populationtotal":62098413},{"Country":"Turkmenistan","CO2Emissions":11.187,"EnergyUsePerPerson":4.4937,"Populationtotal":4918396},{"Country":"Brunei","CO2Emissions":27.6028,"EnergyUsePerPerson":9.4335,"Populationtotal":384695},{"Country":"Hungary","CO2Emissions":5.4529,"EnergyUsePerPerson":2.6358,"Populationtotal":10021886},{"Country":"Guatemala","CO2Emissions":0.9119,"EnergyUsePerPerson":0.5958,"Populationtotal":13690846},{"Country":"Zimbabwe","CO2Emissions":0.7288,"EnergyUsePerPerson":0.7448,"Populationtotal":12451543},{"Country":"Kazakhstan","CO2Emissions":14.6544,"EnergyUsePerPerson":4.479,"Populationtotal":15655345},{"Country":"Qatar","CO2Emissions":48.5944,"EnergyUsePerPerson":15.3104,"Populationtotal":1396060},{"Country":"Tunisia","CO2Emissions":2.4407,"EnergyUsePerPerson":0.9127,"Populationtotal":10247325},{"Country":"Gabon","CO2Emissions":1.5548,"EnergyUsePerPerson":1.3717,"Populationtotal":1450310},{"Country":"Paraguay","CO2Emissions":0.6986,"EnergyUsePerPerson":0.6979,"Populationtotal":6230242},{"Country":"Namibia","CO2Emissions":1.908,"EnergyUsePerPerson":0.7383,"Populationtotal":2200422}],"colGroupNo":[0],"trendInfo":{"linear":[0.4412,0.355,0.88],"quadratic":[null],"cubic":[null],"rank.cor":[0.9534]}};
+/** Interactivity for iNZightPlots
+ * For each plot there's a sub-class which extends with this class `inzplot`.
+ * This class applies for all single panel plots generated with the iNZightPlots
+ * package in R.
+ * Functions that apply for this class apply for all subclasses.
+ * Hierarchy of plots: inzplot -> {hexbin, histogram, dotscatter, bar}
+ *                     inzmap -> {region, centroid, sparklines}
+ * Additional classes/components: boxplot, legend, table, sparkplot
+ * @param {Object} chart - chart.json from R (which includes all data, and
+ * other params for identifying the chart originally drawn in R)
+ * The relevant plot class is called in the onload function (scroll to the bottom of
+ * this script, or search for 'ON LOAD FUNCTION').
+ * NOTE: If it so happens that iNZightPlots gets rewritten/gridSVG no longer gets used,
+ * it's best to rewrite everything.
+ * Naming of grid objects is very important especially when exporting with gridSVG
+ * for targeting certain elements and groups of elements. */
+class Inzplot {
+
+  constructor(chart) {
+    // set svg so that there's variable width and height based on div
+    this.svg = d3.select("svg")
+                 .attr("width", null)
+                 .attr("height", null);
+    this.chart = chart;
+    this.chartType = chart.type[0];
+    this.data = chart.data;
+    this.count = this.data.length;
+    this.Grob = this.getGrob(this.chartType);
+    this.levelNo = (chart.levNames) ? chart.levNames.length : 1;
+    this.panel = document.getElementById(this.Grob);
+  }
+
+  // create a tooltip for the plot
+  setTooltip(width, height = null) {
+    var tooltip = d3.select("body").append("div")
+                    .attr("class", "tooltip")
+                    .attr("id", "tooltip")
+                    .style("width", width)
+                    .style("height", height);
+    this.tooltip = tooltip;
+    return tooltip;
+  }
+
+  /** Identifying the 'Grob' in the chart
+   * (where do all our bars/dots/hexagons lie?)
+   * @param {String} chartType - the type of chart identified
+   * @return Grob identifier */
+  getGrob(chartType) {
+    var polygon = document.getElementsByTagName('polygon'),
+        p, Grob;
+    switch(chartType) {
+      case "hist":
+      p = polygon[2];
+      break;
+
+      case "bar":
+      p = polygon[polygon.length - 1];
+      break;
+
+      case "dot":
+      Grob = 'g[id^="inz-DOTPOINTS."]';
+      break;
+
+      case "scatter":
+      // test if there's a raster map (originally GRID.rastergrob)
+      // OR: you could change the grid name in iNZightMaps package to inz-SCATTERPOINTS...
+       Grob = (document.querySelectorAll('g[id^="background.map"]').length > 0) ?
+              'g[id^="SCATTERPOINTS."]' : 'g[id^="inz-SCATTERPOINTS."]';
+      break;
+
+      default:
+      // for hexbins, bp-stacked
+      p = polygon[0];
+      break;
+    }
+
+    if (p) {
+      var id = p.getAttribute('id');
+      Grob = id.substring(0, id.lastIndexOf('.'));
+    }
+
+    return Grob;
+  }
+
+  // Functions for enabling brushing over elements (selection box)
+  // `brushmove` differs for each plot (depending on what is being
+  // accumulated) - see respective subclasses to change this
+
+  /** Enable brushing on plot
+   * @param node - an element to target and add brush to
+   * @param {Number} selector - where exactly do you want to insert brush
+   * @param {Boolean} text - if an additional paragraph should be added
+   * This is generally true for histograms/hexbins to show accumulated data when
+   * brushing, otherwise false. */
+  enableBrush(node, selector, direction = "xy", text = false) {
+    if (text) {
+      d3.select('#control').append("p")
+                   .attr('class', 'brush-info');
+    }
+
+    // append brush:
+    var svg = d3.select('svg');
+    var brush = (direction === "x") ? d3.brushX() : d3.brush();
+
+    brush.on("start", this.brushstart)
+         .on("brush", this.brushmove)
+         .on("end", this.brushend);
+
+    d3.select(node)
+      .insert("g", "g:nth-child(" + selector + ")")
+      .attr("class", "brush")
+      .call(brush);
+
+    // make handles invisible:
+    d3.selectAll('.handle')
+      .style('opacity', 0);
+    d3.select('.overlay')
+      .attr("width", "100%")
+      .attr("height", "100%")
+      .style('stroke', 'none');
+  }
+
+  brushend() {
+    if (!d3.event.selection) {
+      d3.select(".selection")
+        .style("display", "none");
+    }
+  }
+
+  // When user begins brushing
+  brushstart() {
+    d3.select(".selection")
+      .style("display", null);
+  }
+
+}
+
+/** TABLE CLASS
+ * Includes setup with the DataTables library
+ * Any additional functions related to the table can be added here */
+class Table {
+
+  constructor(chartType) {
+    this.chartType = chartType;
+  }
+
+  /** Initializing table using DataTables
+   * To apply styles and formats onto table from the DataTables library
+   * @param {string} chartType - type of chart shown
+   * For bar plots, rows and columns ordering should be disabled (to link
+   * cells properly to bars + additional rows added)
+   * For all other plots, there's an ID column added where each row represents
+   * an element (a bar, a point, a region, a hexagon, e.t.c). */
+  setDT(chartType) {
+    var table;
+
+    if (chartType === "bar" || chartType === "bp-stacked") {
+      table = $('#table').DataTable({
+          "colReorder": true,
+          //disable ordering and sorting
+          "ordering": false,
+          "aaSorting": []
+      });
+    } else {
+      table = $('#table').DataTable({
+          "colReorder": true,
+          "columnDefs": [
+            { //hide rowID column
+              "targets": [0],
+              "visible": false
+            }
+          ]
+        });
+    }
+    this.DT = table;
+  }
+
+  // This is used to drive the table button
+  // For bar plots, it will hide percent/count conversion buttons
+  showTable() {
+    $('#table_wrapper').toggleClass('hidden');
+    $('.Percentage').toggleClass('hidden');
+    $('.Count').toggleClass('hidden');
+  }
+
+  // Table to plot linking:
+  tableToPlot(table, panel, element) {
+    $('#table tbody').on('click', 'tr', function() {
+      $(this).toggleClass('active');
+          let ind = table.rows('.active')[0];
+          let selector = "." + element;
+          d3.select(panel).selectAll(selector)
+            .attr("class", function(d, i) {
+                return (ind.includes(i) ? element + " selected" : element + " none");
+        });
+      //clear brush
+      d3.selectAll('.selection')
+        .style("display", "none");
+    });
+  }
+
+  // This is used to widen columns when there are more than 3
+  // columns in the table
+  widenColumns() {
+    // make tables not go wide when there's only 1 column
+    if (chart.type !== "bar") {
+      var ncol = $("#table thead tr th").length;
+      if (ncol < 3) {
+        $('#table').css('width', '50%');
+      } else if (ncol <= 4) {
+        $('#table').css('width', '75%');
+      } else {
+        $('#table').css('width', '100%');
+      }
+    } else {
+      $('#table').css('width', '100%');
+    }
+  }
+
+  // initialize table
+  init() {
+    this.setDT(this.chartType);
+    this.widenColumns();
+    // attach event handlers:
+    d3.select("#viewTable")
+      .on("click", this.showTable);
+  }
+
+}
+
+
+/** BOX PLOT CLASS
+ * For setting up interactivity and labels for box plots
+ * In cases where there are box plots present on the plot
+ * (specifically for dot plots and histograms), this will attach interactivity
+ * and label parts of the box plot when the user hovers/clicks on the box plot
+ * @param {Object} chart - chart information from R
+ * (ie factor levels, generally defaults to 1) */
+class Boxplot {
+
+  constructor(chart) {
+    this.levelNo = (chart.levNames) ? chart.levNames.length : 1;
+    this.boxData = chart.boxData;
+    this.polygonBox = document.querySelectorAll('g[id^="inz-box."]');
+    this.boxLines = document.querySelectorAll('g[id^="inz-box-line."]');
+  }
+
+  /** Main function to process and add labels, along with interactions for the
+   * box plot
+   * @param {Number} levelNo - number of levels/factors in the plot
+   */
+  boxMe(levelNo) {
+    var polygonBoxes = this.polygonBox;
+    var boxLines = this.boxLines;
+
+    for (let i = 1; i <= levelNo; i++) { //separate boxes for each plot
+      var polygonBox = polygonBoxes[i-1].children;
+      var boxLine = boxLines[i-1].children;
+      for (let j = 0; j < 2; j++) {
+        polygonBox[j].setAttribute('class', 'box-' + i);
+        boxLine[j].setAttribute('class', 'box-' + i);
+      }
+      this.boxLabelSet(i, 0, 1, 0,'LQ');
+      this.boxLabelSet(i, 1, 2, 2, 'UQ');
+      this.boxLabelSet(i, 1, 0, 1, 'Median');
+      this.boxLabelSet(i, 1, 0, 3, 'Min');
+      this.boxLabelSet(i, 2, 1, 4, 'Max');
+    }
+
+    //Box Plot interactions:
+    for (let j = 1; j <= levelNo; j++) {
+    var box = document.getElementsByClassName('box-' + j);
+    for (let i = 0; i < box.length; i++) {
+      box[i].setAttribute('onmouseover', 'fillBox(' + j + ')');
+      box[i].setAttribute('onmouseout', 'normalBox(' + j + ')');
+      box[i].setAttribute('onclick', 'showBox(' + j + ')');
+      }
+    }
+
+  }
+
+  /** Create box labels (min, max, mean, lower quartile, upper quartile)
+   * This is used to append text onto the SVG
+   * @param {Number} i - designated number that indicates what label it is
+   * @param {String} textinput - the label
+   * @param panel - where to append these svg labels to (generally this.panel
+   * is already identified)
+   * @param {Number} x - x-coordinate of where label is positioned
+   * @param {Number} y - y-coordinate of where label is positioned
+   * @return Appends labels onto SVG in correct positions
+   */
+  boxLabel(i, textinput, panel, x, y) {
+  var boxLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    boxLabel.setAttribute('class', 'label boxData-' + i + ' hidden');
+    boxLabel.setAttributeNS(null, 'transform', 'translate(' + Number(x) + ',' + (Number(y) + 2) + ') scale(1, -1)');
+    boxLabel.setAttributeNS(null, 'id', textinput);
+
+    var textNode = document.createTextNode(textinput);
+    boxLabel.appendChild(textNode);
+    panel.appendChild(boxLabel);
+  }
+
+  /** Sets all labels relative to the box plot and its information
+   * This function sets all the labels for the box plot at once.
+   * @param {Number} i
+   * @param {Number} p
+   * @param {Number} r
+   * @param {Number} q
+   * @param {String} textinput - Label (either: Min, Max, Median, LQ, UQ)
+   */
+  boxLabelSet(i, p, r, q, textinput) {
+
+    if (textinput == "Min" ||  textinput == "Max") {
+      var line = document.getElementById('inz-box-line.1.1.' + i  + '.1.' + p); //i is levelNo.
+      // p will either be 1 or 2 -> 1 = minLine, 2 = maxLine
+      line.setAttribute('class', 'box-' + i);
+      var boxPoints = line.getAttribute('points').split(" ")[r].split(",");
+      var panel = line.parentNode;
+    } else {
+      var box = document.getElementsByClassName('box-' + i)[p];
+      // boxplot split into two boxes - lowerbox (p = 0) and upperbox (p = 1)
+      var boxPoints = box.getAttribute('points').split(" ")[r].split(",");
+      var panel = box.parentNode;
+    }
+
+    var x = boxPoints[0], y = boxPoints[1], text;
+
+    if (textinput == "Median") {
+      // move median label below the box plot
+     y = boxPoints[1] - 11;
+    }
+    if (this.levelNo === 1) {
+      text = textinput + ": " + this.boxData[q].quantiles;
+    } else {
+      text = textinput + ": " + this.boxData[i-1][q].quantiles;
+    }
+    // this is associated with the boxData imported from R.
+    //q = 0 (LQ), 1 (UQ), 2 (Median), 3 (Min), 4 (Max)
+    this.boxLabel(i, text, panel, x, y);
+  }
+
+  init() {
+    this.boxMe(this.levelNo);
+  }
+
+}
+
+// functions for box plot event handling:
+fillBox = function(j) {
+  d3.selectAll('.box-' + j)
+    .classed('fillBox', true);
+};
+
+normalBox = function(j) {
+  d3.selectAll('.box-' + j)
+    .classed('fillBox', false);
+  };
+
+showBox = function(j) {
+  var boxData = d3.selectAll('.boxData-' + j);
+    boxData.classed('hidden', !boxData.classed('hidden'));
+}
+
+
+/** LEGEND CLASS
+ * For attaching legend interactivity
+ * Includes trend line interactivity for scatter plots
+ * Generally for coloured bar plots, colored dot plots and scatter plots
+ * @param props - generally refers to the plot class identified */
+class Legend {
+
+  constructor(props) {
+    this.legendLayout = document.getElementById('inz-leg-layout.1');
+    this.legLineLayout = document.getElementById('inz-leg-lines.1');
+    this.levelNo = (props.levelNo) ? props.levelNo : 1;
+    this.chartType = props.chartType;
+    this.colGroupNo = props.colGroupNo;
+    this.varNames = props.chart.varNames;
+    this.Grob = props.Grob;
+    this.tbl = props.tbl;
+    this.trendInfo = props.chart.trendInfo;
+  }
+
+  // This is used to enable legend interactivity for dot plots and scatter plots
+  enableHandlers() {
+    if (!this.legendLayout) return;
+    let colGroupNo = this.colGroupNo;
+
+    //grab legend text and respective key:
+    let keyText = document.querySelectorAll('tspan[id^="inz-leg-txt-"]');
+    let key = document.querySelectorAll('use[id^="inz-leg-pt-"]');
+    let Grob = this.Grob;
+    let table = this.tbl;
+    let varNames = this.varNames;
+
+    function subset(i) {
+      let ind = i + 1;
+      //get the title variable:
+      var titleVar = document.getElementById('inz-leg-title.1.1.tspan.1').textContent;
+      var key = document.getElementById('inz-leg-pt-' + ind + '.1.1');
+      var keyText = document.getElementById('inz-leg-txt-' + ind + '.1.1.tspan.1').textContent;
+      var names = varNames;
+      var count = document.getElementsByClassName('point').length;
+      var el = document.querySelectorAll(Grob);
+
+      for (let j = 1; j <= count; j++) {
+          var point = document.getElementById(el[0].id + '.' + j);
+          if (key.getAttribute('fill') == point.getAttribute('stroke')) {
+              point.setAttribute('class', 'point selected');
+          } else {
+              point.setAttribute('class', 'point none');
+          }
+      }
+
+      // find column index + filter: (add one for hidden column)
+      var colInd = names.indexOf(titleVar) + 1;
+      table.search('').columns().search('').draw();
+      table.columns(colInd).search("^" + keyText + "$", true, false).draw();
+    }
+
+    this.addHandlers(subset);
+  }
+
+  /** Add interactivity to key and text in legend
+   * @param {Function} subset - A function to filter by a certain group when
+   * user clicks on the group (e.g. dots + table are filtered)
+   * In this case, the subset function is different for dot plots/scatter plots
+   * and for bar plots. However, the hovers are practically the same (show/out functions) */
+  addHandlers(subset) {
+    let keyText = document.querySelectorAll('tspan[id^="inz-leg-txt-"]');
+    let key = document.querySelectorAll('use[id^="inz-leg-pt-"]');
+
+    function show(i) {
+      let ind = i + 1;
+      let circle = document.getElementById('inz-leg-pt-' + ind + '.1.1');
+      let text = document.getElementById('inz-leg-txt-' + ind + '.1.1.tspan.1');
+      if (circle.getAttribute("fill") !== "none") {
+            text.setAttribute('fill', circle.getAttribute('fill'));
+        } else {
+            text.setAttribute('fill', circle.getAttribute('stroke'));
+        }
+      circle.setAttribute("class", "show");
+      text.setAttribute("class", "show");
+    }
+
+    function out(i) {
+      let ind = i + 1;
+      let keyText = document.getElementById('inz-leg-txt-' + ind + '.1.1.tspan.1');
+      let key = document.getElementById('inz-leg-pt-' + ind + '.1.1');
+      keyText.setAttribute("class", "out keyText");
+      key.setAttribute("class", "show");
+    }
+
+    // text handlers:
+    d3.selectAll(keyText)
+      .on("mouseover", (d, i) => show(i))
+      .on("mouseout", (d, i) => out(i))
+      .on("click", (d, i) => subset(i));
+
+    // circle handlers:
+    d3.selectAll(key)
+      .on("mouseover", (d, i) => show(i))
+      .on("mouseout", (d, i) => out(i))
+      .on("click", (d, i) => subset(i));
+  }
+
+  /** This is used to enable trend line interactivity
+   * Primarily adds interactivity to trend lines
+   * @param {String} t - trend line class ("linear", "quadratic", "cubic")
+   * @param {String} g - HTML label generated for the trend line
+   * @param ptip - d3 object for tooltip
+   * Only found on scatter plots only */
+  enableTrends(t, g, ptip) {
+    let legLineLayout = this.legLineLayout;
+
+    d3.select(legLineLayout).selectAll("." + t)
+    .on('mouseover', function() {
+        d3.select(this).style("opacity", 0.5);
+    })
+    .on('mouseout', function() {
+        d3.select(this).style("opacity", 1);
+    })
+    .on('click', function() {
+        d3.selectAll('.trend')
+        .classed('hidden', function() {
+          return((this.getAttribute('class').includes(t) === true) ? false : true);
+      });
+
+      return ptip.classed("hidden", false)
+                 .html(g);
+        });
+
+    d3.selectAll(".trend." + t)
+      .on("mouseover", function() {
+          d3.select(".tooltip")
+            .style("left", d3.event.pageX - 50 + "px")
+            .style("top", d3.event.pageY - 50 + "px")
+            .style("visibility", "visible")
+            .html(g);
+          })
+      .on("mouseout", function() {
+          d3.select(".tooltip")
+            .style("visibility", "hidden");
+          })
+  }
+
+  /** Get the equation of the trend line and create tooltip labels
+   * @param t - type of trend identified ("Linear", "Quadratic", "Cubic")
+   * @return returns HTML for tooltip label
+   * trendInfo is stored in chart information */
+  getEquation(t) {
+    let trendInfo = this.trendInfo;
+    switch(t) {
+        case "linear":
+        return "Linear fit:" + "<span> y = " + trendInfo[t][0] + " " +
+               (trendInfo[t][1] > 0 ? ("+" + trendInfo[t][1]) : trendInfo[t][1])
+               + "x " + "</span> <br />" + "R" + "<sup>2</sup> : " + "<span>"
+               + trendInfo[t][2] + "</span>";
+        break;
+
+        case "quadratic":
+        return "Quadratic fit:" + "<span> y = " + trendInfo[t][0] + " "
+               + (trendInfo[t][1] > 0 ? ("+" + trendInfo[t][1]) : trendInfo[t][1])
+               + "x " + (trendInfo[t][2] > 0 ? ("+" + trendInfo[t][2]) : trendInfo[t][2])
+               + "x<sup>2</sup>" + "</span>" + "<br />"+ "R" + "<sup>2</sup> : " + "<span>"
+               + trendInfo["rank.cor"][0] + "</span>";
+        break;
+
+        case "cubic":
+        return "Cubic fit: <span> y = " + trendInfo[t][0] + " " +
+               (trendInfo[t][1] > 0 ? ("+" + trendInfo[t][1]) : trendInfo[t][1])
+               + "x " + (trendInfo[t][2] > 0 ? ("+" + trendInfo[t][2]) : trendInfo[t][2])
+               + "x<sup>2</sup> " + (trendInfo[t][3] > 0 ? ("+" + trendInfo[t][3]) : trendInfo[t][3])
+               + "x<sup>3</sup> </span>" + "<br />" +  "R" + "<sup>2</sup> : <span>"
+               + trendInfo["rank.cor"][0] + "</span>";
+        break;
+
+        default:
+        return "Invalid trend!";
+    }
+  }
+
+  /** For identifying if there is a separate trend line legend present
+   * Main function for enabling interactivity for trend lines */
+  trendLegend() {
+    // if there is no legend, return:
+    if (!this.legLineLayout) return;
+
+    let trendInfo = this.trendInfo;
+    var lines = d3.select(this.legLineLayout).selectAll('polyline')
+                  .attr('class', function() {
+                    var id = this.id;
+                    var type = id.substring(id.lastIndexOf("-") + 1, id.indexOf("."));
+                    return type;
+                  });
+    var keys = d3.select(this.legLineLayout).selectAll('tspan')
+                 .attr('class', function() { return this.innerHTML; });
+
+    //insert text into the control panel:
+    var ptip = d3.select('#control')
+             .append("p")
+             .attr('class', 'trend-info')
+             .classed("hidden", true);
+
+   var ll = this.legLineLayout.querySelectorAll('tspan');
+
+   //loop over lines
+   for (var i = 0; i < ll.length; i++) {
+       var t = ll[i].innerHTML;
+       var line = document.getElementById('inz-trend-' + t + '.1.1.1.1');
+       line.setAttribute('class', t + ' trend');
+
+       var g = this.getEquation(t);
+       this.enableTrends(t, g, ptip);
+   }
+  }
+
+  // To initialize legend interactivity (both trendlines and groups)
+  init() {
+    // enable handlers on legend
+    this.enableHandlers();
+    //enable trend legend handlers:
+    this.trendLegend();
+  }
+
+}
+
+/** =================================================
+  ON LOAD FUNCTION
+  Facilitates all toggles on navigation bar and
+  initializes appropriate plot
+ ================================================== **/
+
+$(function() {
+  $(".view-tbl").click(function() {
+    $(".tbl-div").removeClass("expand").toggleClass("moveRight");
+    $(".svg-div").removeClass("moveLeft").toggleClass("mid");
+    // for bars:
+    $(".Percentage").toggleClass("hidden");
+    $(".Count").toggleClass("hidden");
+  });
+
+  $(".plot").click(function() {
+    $(".svg-div").removeClass("mid").toggleClass("moveLeft");
+    $(".tbl-div").removeClass("moveRight").toggleClass("expand");
+  });
+
+  $(".help").click(function() {
+    $(".help-overlay").toggleClass("move");
+  });
+
+  $(".help-overlay").click(function() {
+    $(".help-overlay").toggleClass("move");
+  });
+
+  // load chart:
+  var plot;
+
+  switch(chart.type[0]) {
+    //for inzplots:
+    case "hex":
+    plot = new Hexbin(chart);
+    break;
+
+    case "hist":
+    plot = new Histogram(chart);
+    break;
+
+    case "dot":
+    case "scatter":
+    plot = new DotScatter(chart);
+    break;
+
+    case "bar":
+    plot = new UnstackedBar(chart);
+    break;
+
+    case "bp-stacked":
+    plot = new StackedBar(chart);
+    break;
+
+    //for inzmaps:
+    case "region":
+    plot = new RegionMap(chart);
+    break;
+
+    case "point":
+    plot = new CentroidMap(chart);
+    break;
+
+    case "sparklines":
+    plot = new SparkMap(chart);
+    break;
+
+    default:
+    return;
+  }
+
+  plot.init();
+  console.log("Load complete!");
+
+});
+/** DOT PLOTS AND SCATTER PLOTS
+ * Class for initializing interactivity for dot plots and scatter plots
+ * Includes scatterplots drawn with iNZightMaps */
+class DotScatter extends Inzplot {
+
+  constructor(props) {
+    super(props);
+    this.panel = document.querySelector(this.Grob);
+    // bind event handlers:
+    this.reset = this.reset.bind(this);
+    this.brushmove = this.brushmove.bind(this);
+    this.filterTable = this.filterTable.bind(this);
+  }
+
+  // create options for variable selection:
+  createForm() {
+    d3.select(".menu").insert("li", ".help")
+      .attr("class", "var-control")
+    //create form
+    var form = d3.select(".var-control").append("div")
+                    .attr("class", "form-group form-inline form-div")
+                    .attr("id", "form");
+
+    form.append("label")
+        .html("Variables to display:");
+
+    form.append("select")
+        .attr("class", "form-control select-var")
+        .attr("id", "selectVar")
+        .attr("multiple", "multiple");
+
+    // get column names:
+    var ncol = $("#table thead tr th").length;
+    var th = document.getElementsByTagName('th');
+    for (var i = 0; i <= ncol; i++) {
+        var opt = document.createElement('option');
+        if (i == 0) {
+          opt.value = 0;
+          opt.classList.add('select');
+          opt.innerHTML = "Display all";
+          opt.selected = "selected";
+        } else {
+        opt.value = i;
+        opt.innerHTML = th[i-1].innerHTML;
+      }
+      selectVar.appendChild(opt);
+    };
+  }
+
+  //filter table
+  filterTable() {
+    let table = this.tbl,
+        levelNo = this.levelNo,
+        ind = [];
+    //search for all those that are selected, then extract id num:
+    var selected = document.getElementsByClassName('selected');
+    for (var j = 0; j < selected.length; j++) {
+        var id = selected[j].id;
+        if (levelNo > 1) {
+          // search for the middle number due to levels:
+          var mid = id.substring(0, id.lastIndexOf('.1.'));
+          var levNum = Number(mid.substring(mid.lastIndexOf('.') + 1));
+          var num = Number(id.substring(id.lastIndexOf('.') + 1));
+          // actual index in table:
+          var idNum = chart.countsTab[levNum - 1] + num;
+        } else {
+          var idNum = id.substring(id.lastIndexOf('.') + 1);
+        }
+        ind.push("^" + idNum + "$");
+    }
+
+    table.search('').columns().search('').draw();
+    table.columns(0).search(ind.join("|"), true, false).draw();
+  }
+
+  // set tooltip and point interactions
+  setHovers() {
+    var tooltip = this.tooltip,
+        Grob = document.querySelectorAll(this.Grob),
+        data = this.data,
+        levelNo = this.levelNo,
+        filterTable = this.filterTable,
+        table = this.tbl;
+
+    d3.selectAll(Grob).selectAll("use")
+      .attr("class", "point");
+
+      d3.selectAll('.point')
+        .data(data)
+        .attr('class', 'point')
+        .on('mouseover', function (d, i) {
+            var g = ' ';
+            var names = chart.varNames;
+            var selectVar = document.getElementsByTagName('select')[0];
+            var sOpt = selectVar.selectedOptions;
+            var s = [];
+            for (j = 0; j < sOpt.length; j++) {
+                s.push(Number(sOpt[j].value));
+              }
+
+            for (var j = 0; j < s.length; j++) {
+              if (s[j] !== undefined) {
+                var w = names[s[j]-1] + ": <span>"
+                var t =  data[i][names[s[j]-1]] + "</span> <br>"
+             }
+
+             var g = w + t + g;
+             var p = s.length;
+
+             if (s.includes(0)) {
+               var g = ' ';
+               for (var k = 0; k < names.length; k++) {
+                 var w = names[k] + ": <span>"
+                 var t =  data[i][names[k]] + "</span> <br>"
+               var g = w + t + g;
+               var p = names.length;
+             }
+           }
+         }
+
+         return tooltip.style('visibility', 'visible')
+                       .style("left", d3.event.pageX - 50 + "px")
+                       .style("top", d3.event.pageY - 30 - 15*(p-1) + "px")
+                       .html(g);
+          })
+          .on('mouseout', function () { return tooltip.style("visibility", 'hidden'); })
+          .on('click', function (d, i) {
+            var selected = this;
+            // clear selection box:
+            d3.selectAll('.selection')
+              .style("display", "none");
+
+            d3.selectAll('.point')
+              .attr("class", function() {
+                  if (!d3.event.shiftKey) {
+                    return (this === selected) ? "point selected" : "point none";
+                  } else {
+                    if (this.getAttribute('class') === "point selected") {
+                      return "point selected";
+                    } else if (this === selected) {
+                        return "point selected";
+                    } else {
+                      return "point none";
+                    }
+                }
+              });
+
+              filterTable();
+
+          })
+          .on('dblclick', function (d, i) { // deselect
+            var selected = this;
+             selected.setAttribute('class', 'point none');
+             filterTable();
+          });
+  }
+
+  // add brush to the plot
+  addBrush() {
+    var tag, selector;
+    // identify if a raster map is present (from iNZightMaps)
+    if (document.querySelectorAll('g[id^="background.map"]').length > 0) {
+      tag = "inz-plot-bg.1.1.1";
+      selector = 4;
+    }  else {
+      tag = "inz-x-grid.1.1.1";
+      selector = 4;
+    }
+
+    let pp = document.getElementById(tag).parentNode;
+    this.enableBrush(pp, selector, "xy", false);
+  }
+
+  brushmove() {
+    var s = d3.event.selection,
+        x1 = s[0][0],
+        x2 = s[1][0],
+        y1 = s[0][1],
+        y2 = s[1][1],
+        ind = [];
+
+    d3.selectAll('.point')
+          .attr('class', function(d, i) {
+            var selected = this;
+            var x = this.x.baseVal.value;
+            var y = this.y.baseVal.value;
+            if ((x1 <= x && x <= x2) && (y1 <= y && y <= y2)) {
+              return('point selected');
+            } else {
+              return('point none');
+            }
+          });
+
+    this.filterTable();
+  }
+
+  reset() {
+    d3.selectAll('.point')
+      .classed("none selected", false);
+
+    // restore table to original state
+    this.tbl.search('').columns().search('').draw();
+    this.tbl.rows().nodes().to$().removeClass('active');
+
+    d3.selectAll('.label')
+    .classed("hidden", true);
+
+    // clear selection box:
+    d3.selectAll('.selection')
+      .style("display", "none");
+
+    d3.selectAll('.trend')
+      .classed("hidden", false);
+
+    d3.select('.trend-info')
+      .classed("hidden", true);
+  }
+
+  init() {
+    //initialize table:
+    var tbl = new Table(this.chartType);
+    tbl.init();
+    tbl.tableToPlot(tbl.DT, this.panel, "point");
+    this.tbl = tbl.DT;
+
+    // set tooltip:
+    this.createForm();
+    this.setTooltip(100);
+    this.setHovers();
+    this.addBrush();
+
+    // init box plot if it's a dot plot:
+    if (this.chartType === "dot") {
+      var box = new Boxplot(this.chart);
+      box.init();
+    }
+
+    //enable legend interactions
+    let legend = new Legend(this);
+    legend.init();
+
+    //enable event handlers:
+    d3.select("#reset")
+      .on("click", this.reset);
+
+    d3.select(".overlay")
+      .on("dblclick", this.reset);
+  }
+
+} </script>
+  </body>
+</html>

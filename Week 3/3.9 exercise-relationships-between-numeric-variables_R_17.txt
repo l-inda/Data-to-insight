@@ -1,0 +1,59 @@
+# R CODE from the file "3.9 exercise-relationships-between-numeric-variables_R_17.pdf"
+# Provided here in case of problems with copying and pasting from the pdf
+
+
+# Setup
+library(iNZightPlots)
+library(FutureLearnData)
+
+data(gapminder_2008)
+
+
+# Plot y=EnergyUsePerPerson by x=CO2emissions
+
+
+
+iNZightPlot(CO2Emissions, EnergyUsePerPerson, data=gapminder_2008)
+
+# Note the reversal in the order of the names between the call and ordinary English usage for what we want to do!
+# Label the 4 most extreme points by the variable Country
+iNZightPlot(CO2Emissions, EnergyUsePerPerson, data=gapminder_2008, locate.extreme=4, locate=Country)
+
+# Add a trend line
+
+iNZightPlot(CO2Emissions, EnergyUsePerPerson, data=gapminder_2008, trend="linear")
+
+# Changing from the default Axes labels and title
+
+iNZightPlot(CO2Emissions, EnergyUsePerPerson, data=gapminder_2008, xlab="CO2 emissions per person ", ylab="Energy use per person", main="Energy use versus CO2 emissions")
+
+# Put on a trend line but coloured red, instead of the default (blue) 
+
+iNZightPlot(CO2Emissions, EnergyUsePerPerson, data=gapminder_2008, trend="linear", col.trend=list(linear="red")) 
+
+#  Label specified data points
+ids = (1:nrow(gapminder_2008))[gapminder_2008$Country %in% c("Qatar","Iceland","Sweden")]
+
+
+iNZightPlot(CO2Emissions, EnergyUsePerPerson, data=gapminder_2008, locate.id=ids, locate=Country)
+
+
+# Here is sample code for web graphics:
+########################################
+
+# Make a plot and also store the output in myplot
+myplot = iNZightPlot(CO2Emissions, EnergyUsePerPerson, data=gapminder_2008, trend="linear")
+
+# Specify a location to store an Interactive HTML file. I will call my file "myintplot.html"
+# You will have to change the path to the file because this one is to a location on my desktop!
+filepath = "C:/Users/myusername/Desktop/myintplot.html"
+
+exportHTML(myplot, filepath)
+browseURL(filepath)   #open the file up in my default browser
+
+# If the plot is truncated make your R plotting window smaller
+
+
+# To add extra variables, e.g. Country …
+exportHTML(myplot, filepath, data=gapminder_2008, extra.vars = c("Country", "Populationtotal"))
+
