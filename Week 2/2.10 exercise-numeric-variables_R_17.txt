@@ -1,0 +1,47 @@
+# R CODE from the file "2.10 exercise-numeric-variables_R_17.pdf"
+# Provided here in case of problems with copying and pasting from the pdf
+# Note that everything on a line after a "#" character is a Comment for readers and is ignored by R
+
+
+# Plot a numeric variable (Pulse) 
+iNZightPlot(Pulse, data=nhanes_1000)
+
+# Changing the size of the dots
+iNZightPlot(Pulse, data=nhanes_1000, cex.dotpt=.4)
+iNZightPlot(Pulse, data=nhanes_1000, cex.dotpt=2)
+
+# Get a Summary for Pulse
+getPlotSummary(Pulse, data=nhanes_1000)
+
+# Equivalent of Get Inference for Pulse
+getPlotSummary(Pulse, data=nhanes_1000, summary.type="inference", inference.type="conf")
+
+
+iNZightPlot(Height, data=nhanes_1000)
+
+# Colour points by Age
+iNZightPlot(Height, data=nhanes_1000, colby=Age)
+
+# Change colour palette to rainbow
+iNZightPlot(Height, data=nhanes_1000, colby=Age, col.fun=rainbow)
+
+
+iNZightPlot(Height, data=nhanes_1000)
+
+#  Change Plot type to histogram 
+iNZightPlot(Height, data=nhanes_1000, plottype= "hist")
+
+
+
+
+
+
+#  Control the number of bins (class intervals) 
+iNZightPlot(Height, data=nhanes_1000, plottype= "hist", hist.bins=10)
+
+#  Get a list of all the other things that can be changed in plots 
+
+inzpar()                       # This list is complete
+
+?inzpar                        # This documentation is not complete
+

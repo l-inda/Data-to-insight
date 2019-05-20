@@ -1,0 +1,65 @@
+# R Code in the file "2.5 exercise-categorical-variables_R_17"
+# Provided here in case of problems with copying and pasting from the pdf
+# Note that everything on a line after a "#" character is a Comment for readers and is ignored by R
+
+
+# R code
+# Setup
+library(iNZightPlots)
+library(FutureLearnData)
+data(nhanes_1000)
+
+iNZightPlot(Race3, data=nhanes_1000)
+
+getPlotSummary(Race3, data=nhanes_1000)
+
+getPlotSummary(Race3, data=nhanes_1000, summary.type="inference", inference.type="conf")
+
+# Colour by a variable (Race3) (default colour palette)
+iNZightPlot(Race3, data=nhanes_1000, colby=Race3)
+
+# Create a new variable Race3.reord to re-order Race3
+# with the categories in frequency order
+
+levels(nhanes_1000$Race3)
+nhanes_1000$Race3.reord = 
+    factor(nhanes_1000$Race3, levels = c("White", "Black", "Mexican", "Hispanic", "Asian", "Other") )
+
+iNZightPlot(Race3.reord, data=nhanes_1000)
+
+
+iNZightPlot(Education, data=nhanes_1000)
+# Weíll do this again putting the levels of Education into a sensible order
+
+levels(nhanes_1000$Education)
+# Create a new variable to re-order Education
+nhanes_1000$Education.reord = factor(nhanes_1000$Education, levels = c("8thGrade","9_11thGrade","HighSchool","SomeCollege","CollegeGrad")  )
+
+levels(nhanes_1000$Education.reord)
+
+iNZightPlot(Education.reord, data=nhanes_1000)
+
+iNZightPlot(Education.reord, data=nhanes_1000,colby=Education.reord)
+
+# Now change the colour palette to rainbow colours
+iNZightPlot(Education.reord, data=nhanes_1000,colby=Education.reord, col.fun=rainbow)
+
+
+
+library(colorspace) 
+iNZightPlot(Education.reord, data=nhanes_1000,colby=Education.reord, col.fun=rainbow_hcl)
+
+# Exporting an interactive html plot
+#----------------------------------
+
+# Make a plot and also store the output in myplot
+myplot = iNZightPlot(Education.reord, data=nhanes_1000,colby=Education.reord)
+
+# Specify a location to store an Interactive HTML file. I will call my file "myintplot.html"
+# You will have to change the path to the file!
+#filepath = "C:/Users/myusername/Desktop/myintplot.html"
+# On my MacOs
+filepath = paste0(getwd(),"/myintplot.html")
+exportHTML(myplot, filepath)
+browseURL(filepath, browser = getOption("browser")) #open the file up in my default browser
+

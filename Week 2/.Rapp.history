@@ -1,0 +1,107 @@
+Help
+nstall.packages(c('iNZightPlots', 'FutureLearnData'), dependencies = TRUE,#
+repos = c('https://r.docker.stat.auckland.ac.nz', 'https://cran.rstudio.com'))
+install.packages(c('iNZightPlots', 'FutureLearnData'), dependencies = TRUE,#
+repos = c('https://r.docker.stat.auckland.ac.nz', 'https://cran.rstudio.com'))
+library(iNZightPlots)
+library(FutureLearnData)
+source("/Users/jpalbino/Library/Mobile Documents/com~apple~CloudDocs/GitHub/exemplos/Data Science Jumpstart/r_code.R")
+library(iNZightPlots)
+library(FutureLearnData)
+data(package="FutureLearnData")
+data(nhanes_1000)
+nhanes_1000[1:10, 1:8]
+head(nhanes_1000)
+str(nhanes_1000)
+tail(nhanes_1000)
+names(nhanes_1000)
+iNZightPlot(Race3, data=nhanes_1000)
+iNZightPlot(Height, data=nhanes_1000)
+getPlotSummary(Height, data=nhanes_1000)
+quit()
+source("/Users/jpalbino/Downloads/Data to insight/exercise-import-data-into-R_17.R")
+cas_500 =  read.csv(file.choose(), header = TRUE)
+cas_500[1:5, 1:9]
+names(cas_500)
+library(iNZightPlots)
+iNZightPlot(armspan, data= cas_500)
+Olymp_imp = read.table(file.choose(), header = TRUE, sep="\t")
+names(Olymp_imp)
+iNZightPlot(YEAR, TIME, data= Olymp_imp)
+?read.table
+?read.csv
+library(iNZightPlots)#
+library(FutureLearnData)#
+data(nhanes_1000)
+iNZightPlot(Race3, data=nhanes_1000)
+getPlotSummary(Race3, data=nhanes_1000)
+getPlotSummary(Race3, data=nhanes_1000, summary.type="inference", inference.type="conf")#
+# Colour by a variable (Race3) (default colour palette)#
+iNZightPlot(Race3, data=nhanes_1000, colby=Race3)
+# Create a new variable Race3.reord to re-order Race3#
+# with the categories in frequency order#
+levels(nhanes_1000$Race3)#
+nhanes_1000$Race3.reord = #
+factor(nhanes_1000$Race3, levels = c("White", "Black", "Mexican", "Hispanic", "Asian", "Other") )#
+iNZightPlot(Race3.reord, data=nhanes_1000)
+iNZightPlot(Education, data=nhanes_1000)#
+# Weíll do this again putting the levels of Education into a sensible order#
+levels(nhanes_1000$Education)#
+# Create a new variable to re-order Education#
+nhanes_1000$Education.reord = factor(nhanes_1000$Education, levels = c("8thGrade","9_11thGrade","HighSchool","SomeCollege","CollegeGrad")  )#
+levels(nhanes_1000$Education.reord)#
+iNZightPlot(Education.reord, data=nhanes_1000)#
+iNZightPlot(Education.reord, data=nhanes_1000,colby=Education.reord)#
+# Now change the colour palette to rainbow colours#
+iNZightPlot(Education.reord, data=nhanes_1000,colby=Education.reord, col.fun=rainbow)
+library(colorspace) #
+iNZightPlot(Education.reord, data=nhanes_1000,colby=Education.reord, col.fun=rainbow_hcl)#
+# Exporting an interactive html plot#
+#----------------------------------#
+# Make a plot and also store the output in myplot#
+myplot = iNZightPlot(Education.reord, data=nhanes_1000,colby=Education.reord)#
+# Specify a location to store an Interactive HTML file. I will call my file "myintplot.html"#
+# You will have to change the path to the file!#
+filepath = "C:/Users/myusername/Desktop/myintplot.html"#
+exportHTML(myplot, filepath)#
+browseURL(filepath) #open the file up in my default browser
+# Specify a location to store an Interactive HTML file. I will call my file "myintplot.html"#
+# You will have to change the path to the file!#
+#filepath = "C:/Users/myusername/Desktop/myintplot.html"#
+# On my MacOs#
+filepath = paste0(getwd(),"/myintplot.html")#
+#
+exportHTML(myplot, filepath)#
+browseURL(filepath)   #open the file up in my default browser
+getwd()
+# R Code in the file "2.5 exercise-categorical-variables_R_17"
+# R Code in the file "2.5 exercise-categorical-variables_R_17"
+library(iNZightPlots)
+library(FutureLearnData)
+data(nhanes_1000)
+iNZightPlot(Race3, data=nhanes_1000)
+getPlotSummary(Race3, data=nhanes_1000)
+getPlotSummary(Race3, data=nhanes_1000, summary.type="inference", inference.type="conf")
+iNZightPlot(Race3, data=nhanes_1000, colby=Race3)
+levels(nhanes_1000$Race3)
+nhanes_1000$Race3.reord =
+factor(nhanes_1000$Race3, levels = c("White", "Black", "Mexican", "Hispanic", "Asian", "Other") )
+factor(nhanes_1000$Race3, levels = c("White", "Black", "Mexican", "Hispanic", "Asian", "Other") )
+iNZightPlot(Race3.reord, data=nhanes_1000)
+iNZightPlot(Education, data=nhanes_1000)
+levels(nhanes_1000$Education)
+nhanes_1000$Education.reord = factor(nhanes_1000$Education, levels = c("8thGrade","9_11thGrade","HighSchool","SomeCollege","CollegeGrad")  )
+levels(nhanes_1000$Education.reord)
+iNZightPlot(Education.reord, data=nhanes_1000)
+iNZightPlot(Education.reord, data=nhanes_1000,colby=Education.reord)
+iNZightPlot(Education.reord, data=nhanes_1000,colby=Education.reord, col.fun=rainbow)
+library(colorspace)
+iNZightPlot(Education.reord, data=nhanes_1000,colby=Education.reord, col.fun=rainbow_hcl)
+myplot = iNZightPlot(Education.reord, data=nhanes_1000,colby=Education.reord)
+getwd()
+getwd("/Users/jpalbino/Downloads/Data to insight/Week 2")
+setwd("/Users/jpalbino/Downloads/Data to insight/Week 2")
+getwd()
+filepath = paste0(getwd(),"/myintplot.html")
+exportHTML(myplot, filepath)
+browseURL(filepath, browser = getOption("browser")) #open the file up in my default browser
