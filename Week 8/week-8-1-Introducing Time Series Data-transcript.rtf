@@ -1,0 +1,61 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671\cocoasubrtf400
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue-Bold;\f1\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;\red95\green96\blue99;\red255\green255\blue255;\red44\green39\blue44;
+}
+{\*\expandedcolortbl;;\cssrgb\c44706\c45098\c46275;\cssrgb\c100000\c100000\c100000;\cssrgb\c22745\c20392\c22745;
+}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508416#"}}{\fldrslt 
+\f0\b\fs18 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 0:16\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 0 minutes and 16 seconds\cb1 \
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+
+\f1\fs18 \cf4 \cb3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 Welcome back. This week, we'll look at data collected over time where we're interested in looking at changes over time. Statisticians call it "Time-series data". This is a standalone module that can be studied at any time after Week Four. People are often fascinated by time series data because it can help them understand the past but, even more, to help them predict the future. This video will introduce you to plotting data against time and some patterns that that can reveal. In subsequent videos, we'll move on to estimating seasonal differences, forecasting, and comparing related series.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508416#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 0:53\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 0 minutes and 53 seconds\cb1 \
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf4 We'll be dealing only with the simple case in which each series has only a single observation at each time point, and our times are equally spaced, as in the following example. Here's a portion of a set of data on visitor arrivals in New Zealand. It's quarterly data, which means it's reported four times a year, covering periods of three months. Notice how the time variable is represented with the year, and then the quarter of the year (Q1 to Q4) for which the figures are given. Arrivals are reported separately for eight countries -- presumably, the eight biggest sources of visitors. Data recorded over time like this is called "Time-series data". The time format is the one used by Statistics New Zealand.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508416#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 1:37\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 1 minute and 37 seconds\cb1 \
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf4 That and several slightly different variants are used all around the world. What are we going to do with data like this? Well we could just do a scatter plot of arrivals versus time. I can see some patterns. I see three bands of points, and I see some sort of up and then down again trend. But people don't plot time series data like this. Typically the data is plotted against time with the points joined up by lines. Why?\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508416#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 2:11\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 2 minutes and 11 seconds\cb1 \
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf4 That's why. The saw-tooth pattern we couldn't see in the regular scatterplot jumps out at us as the points get connected up. The major things we see now are an overall trend and the saw-teeth. I'll draw in a vertical line at the position of each year. There's a basic pattern that repeats every year. We call such patterns, seasonal patterns. We can see it better here, where we plotted the data against quarter, with a separate line for each year. Every year, the visitor numbers are biggest in the January to March quarter (New Zealand's summer months) and lowest in the April to June and July to September quarters (New Zealand's winter months).\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508416#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 2:54\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 2 minutes and 54 seconds\cb1 \
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf4 Now I suspect that the October to December figures are high because in New Zealand, December is a warm month, and contains the Christmas holidays. We can check on this because Statistics New Zealand also publishes a monthly version of this series. The big months are January, February, and December. You may also have noticed there's something odd going on here and here. Anyway, I digress. Back to this. Seasonal patterns are common in time series data. There are often patterns that are repeated across hours of the day, days of the week, or as here, months or quarters of the year. And joining the points by lines helps us to see these patterns.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508416#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 3:38\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 3 minutes and 38 seconds\cb1 \
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf4 A series with the seasonal pattern is described as a "seasonal series". They are common in social and economic data, particularly that published by government agencies, and in some sorts of biological data. Why do people worry about identifying and estimating patterns, like the ones we've been seeing? Mainly because they want to take them and project them into the future. They want to use them for forecasting what's going to happen next so that they can plan for this anticipated future, how to adapt to it or take advantage of it. This might be having the right levels of resources in place, perhaps budgeting to employ additional staff to cover peak periods. And so on.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508416#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 4:21\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 4 minutes and 21 seconds\cb1 \
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf4 In the next video, we'll discuss breaking a seasonal series into component parts, with a particular emphasis on the seasonal components. A process called decomposition. We'll also talk about forecasting.\
+}

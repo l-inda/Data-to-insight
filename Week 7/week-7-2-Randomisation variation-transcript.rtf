@@ -1,0 +1,75 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671\cocoasubrtf400
+{\fonttbl\f0\fnil\fcharset0 HelveticaNeue-Bold;\f1\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;\red95\green96\blue99;\red255\green255\blue255;\red44\green39\blue44;
+}
+{\*\expandedcolortbl;;\cssrgb\c44706\c45098\c46275;\cssrgb\c100000\c100000\c100000;\cssrgb\c22745\c20392\c22745;
+}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508404#"}}{\fldrslt 
+\f0\b\fs18 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 0:16\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 0 minutes and 16 seconds\cb1 \
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+
+\f1\fs18 \cf4 \cb3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 In the last video and the readings, we saw how random assignment of experimental units to treatment groups is the most reliable way people know for constructing fair tests of treatments. I ended the last video by saying that although random assignment is best, it's by no means perfect. I'm now going to show you the main problem with it. And while we're learning about that, we'll sow the seeds of a solution. Keep this simple scenario in the back of your mind. We want to compare a new drug that's supposed to lower blood pressure to a control treatment. We have 20 people who we randomised to receive the drug treatment or the control treatment. And sometime later, we measure their blood pressures.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508404#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 0:59\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 0 minutes and 59 seconds\cb1 \
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf4 If the drug's effective in lowering blood pressures, we'd expect the drug-treated group to have lower blood pressures on average than the control group. Here are the systolic blood pressures of 20 people in the NHANES data set. I'm pulling a copy of the points down into the middle panel. Now I've randomly labelled and coloured half of them as belonging to Group A and half as belonging to Group B. Now I've pulled them apart into two artificial groups, marked the position of the mean blood pressure of each group, and I've shown the differences between these two means with a red arrow. The B Group mean is bigger than the A Group mean by about three units.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508404#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 1:43\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 1 minute and 43 seconds\cb1 \
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf4 These groupings are entirely random and artificial. Nothing's been done to anyone. We've just randomly divided the available people into two groups. Let's do it again-- bring them down, randomly label half of them as belonging to Group A and the other half as belonging to Group B. Separate the groups and show the difference in means. The difference is really small this time. I'll do it faster a few more times to reinforce what we're doing.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508404#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 2:28\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 2 minutes and 28 seconds\cb1 \
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf4 Now I'll do it 20 times.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508404#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 2:35\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 2 minutes and 35 seconds\cb1 \
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf4 Did you notice that sometimes there were quite big differences between my randomly chosen groups? Watch again. Look at this one. Treatment B is clearly reducing blood pressure. But of course, it's not. Treatment B is not a treatment at all. What we're seeing is just the result of random labelling. We've been seeing random labelling with A's and B's producing small and large differences in mean blood pressure. But we need a way to record these differences as they go by. This is how we do it. The arrows drop down, and we record the links in the bottom panel. Right pointing arrows (positive differences) go to the right of zero, while left pointing arrows (negative differences) go to the left of zero.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508404#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 3:23\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 3 minutes and 23 seconds\cb1 \
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf4 Now let's do this 1,000 times. We build up a distribution of differences. Some of them are quiet big. We're seeing differences in means of up to about 16 units in either direction with the occasional one even larger. This is quite large even compared with the person to person differences in blood pressures. What's the moral of all of this? Random assignment to groups acting on its own can produce quite large differences between group centres. There were no treatment differences here. It was random assignment and nothing else. Let's go back to the statement from the set-up scenario.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508404#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 4:03\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 4 minutes and 3 seconds\cb1 \
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf4 If the drug is effective in lowering blood pressures, we'd expect the drug treated group to have lower blood pressures on average than the control group-- so far so good. We now know, however, that random assignment to groups can on its own produce quite large differences between group centres. If we saw a difference between the drug and control groups in experimental data of a size that could easily be generated by random assignment acting alone, this would not provide any evidence that the drug was effective. So to believe that we have evidence that the drug is effective, we'd have to see differences between the drug group and the control group that were bigger than random assignment acting alone would produce.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508404#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 4:44\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 4 minutes and 44 seconds\cb1 \
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf4 In the next video, we'll flesh out this idea and show how we can use it in data analysis. The type of variation we've been seeing here is called randomisation variation. And we've been using the randomisation variation module in VIT. Just as with sampling error, randomisation variation becomes less of a problem when we have more observations. Here we're comparing randomisation variation with 10 per group and 40 per group.\
+\pard\pardeftab720\sl260\sa326\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.futurelearn.com/courses/data-to-insight/8/steps/508404#"}}{\fldrslt 
+\f0\b \cf2 \strokec2 5:16\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 Skip to 5 minutes and 16 seconds\cb1 \
+}}\pard\pardeftab720\sl260\sa326\partightenfactor0
+\cf4 Here I've added 320 points. As with sampling, every time we multiply the number of points by four, we halve the amount of randomisation variation. But whereas major clinical trials in medicine may have thousands of observations, and thus low randomisation variation, experiments on industrial processes, where obtaining each observation can be hugely expensive, tend to have small numbers of observations. This brings us to the end of this video. Next time, we'll talk about the randomisation test, a statistical procedure for assessing the plausibility of a "Your results could just be due to chance" explanation.\
+}
